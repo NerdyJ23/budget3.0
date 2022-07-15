@@ -8,6 +8,6 @@
 	crossorigin="anonymous"></script>
 
 
+	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -7,7 +7,6 @@ Vue.component('main-page', {
 	`
 	,mounted() {
 		this.getSession();
-		this.getChartJS();
 	}
 	,data: function() {
 		return {
@@ -17,12 +16,16 @@ Vue.component('main-page', {
 	}
 	,methods: {
 		getSession() {
-			fetch("/AJAX/BUDGET_GET_GRAPH.php", {
+			fetch("/AJAX/getReceiptItems.php", {
 				method: 'POST',
 				headers: {
 					'content-type': 'application/json'
 				},
-				body: JSON.stringify({month: 7, year: 2021})
+				body: JSON.stringify({
+					month: 7
+					,year: 2021
+					,type: 'total'
+				})
 			}).then(response => {
 				console.log(response);
 				if (response.status === 200) {
@@ -37,16 +40,6 @@ Vue.component('main-page', {
 				console.error(err);
 				this.loaded = true;
 			})
-		}
-		,getChartJS() {
-			let chartJS = document.createElement('script')
-			chartJS.setAttribute('src', 'https://cdn.jsdelivr.net/npm/chart.js')
-			document.head.appendChild(chartJS);
-		}
-	}
-	,provide: function() {
-		return {
-			getChartJS: this.getChartJS
 		}
 	}
 })

@@ -5,13 +5,11 @@ Vue.component('budget-graph', {
 			{{monthStruct[month]}}
 		</v-card-title>
 		<v-card-text>
-			<canvas id="chart" class="chart"></canvas>
+			<div id="chart" class="chart" @click="toggleTooltip"></div>
 		</v-card-text>
 	</v-card>
 	`
-	,inject: ["getChartJS"]
 	,mounted() {
-		this.getChartJS();
 		this.generateGraph();
 	}
 	,props: {
@@ -25,10 +23,13 @@ Vue.component('budget-graph', {
 			monthStruct: ['January','February','March','April','May','June','July','August','September','October','November','December'],
 			month: 0,
 			year: 0000,
-			config: {
+			options: {
+				animationEnabled: true,
+				title: {
+					text: "Budget"
+				},
 				labels: [],
 				type: 'bar',
-				animationEnabled: true,
 				axisX: {
 					title: "Month"
 				},
@@ -40,8 +41,7 @@ Vue.component('budget-graph', {
 					reversed: true
 				},
 				legend: {
-					verticalAlign: "center",
-					horizonalAlign: "right",
+					horizonalAlign: "left",
 					reversed: true
 				},
 				data: []
@@ -50,17 +50,40 @@ Vue.component('budget-graph', {
 	}
 	,methods: {
 		generateGraph() {
-			// console.log(this.dataPoints);
-			for(let i in this.dataPoints) {
+			console.log(this.dataPoints);
+			let tempData = [];
+			this.dataPoints.forEach((item,index) => {
+				if(typeof tempData[item.category] === 'undefined') {
+					tempData[item.category] = {
+						name: item.category,
+						cost: 0
+					}
+				}
+				tempData[item.category].cost += item.cost * item.count;
+			})
+			// console.log(tempData);
+			for(let i in tempData) {
+				if(tempData[i].cost <= 0) {
+					console.log(tempData[i]);
+					continue;
+				}
 				let item = {
 					type: "stackedColumn100",
-					name: this.dataPoints[i].name,
+					showInLegend: true,
+					name: tempData[i].name,
+					dataPoints: [{
+						label: this.monthStruct[this.month],
+						y: tempData[i].cost,
+						yValueFormatString: "$#####"
+					}]
 				}
 				this.options.data.push(item);
 			}
-			console.log(this.options);
-			const chartLoc = document.getElementById('chart').getContext('2d');
-			const chart = new Chart(chartLoc,this.options);
+			var chart = new CanvasJS.Chart("chart",this.options);
+			chart.render();
+		}
+		,toggleTooltip() {
+			$("#chart").CanvasJSChart().toolTip.shared = $("#chart").CanvasJSChart().toolTip.shared;
 		}
 	}
 })

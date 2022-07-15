@@ -3,7 +3,12 @@
 		<?php include('templates/header.php') ?>
 		<title>Budgeting</title>
 		<script src="/components/MainPage.vue.js"></script>
-		<script src="/components/Utility/Mavigation.vue.js"></script>
+		<script src="/components/Utility/Navigation.vue.js"></script>
+
+		<script src="/components/Graph/GraphPage.vue.js"></script>
+		<script src="/components/Graph/GraphDateSelect.vue.js"></script>
+		<script src="/components/Graph/Graph.vue.js"></script>
+
 
 	</head>
 	<script type="text/javascript">

@@ -5,7 +5,8 @@ Vue.component('budget-graph', {
 			{{monthStruct[month]}}
 		</v-card-title>
 		<v-card-text>
-			<div id="chart" class="chart" @click="toggleTooltip"></div>
+			<div id="barChart" class="chart" style="width:50%"></div>
+			<div id="pieChart" style="width:50%"></div>
 		</v-card-text>
 	</v-card>
 	`
@@ -34,7 +35,7 @@ Vue.component('budget-graph', {
 					title: "Month"
 				},
 				axisY: {
-					suffix: "%"
+					suffix: "$"
 				},
 				toolTip: {
 					shared: true,
@@ -44,13 +45,18 @@ Vue.component('budget-graph', {
 					horizonalAlign: "left",
 					reversed: true
 				},
-				data: []
+				data: [{
+					type: "column",
+					showInLegend: true,
+					yValueFormatString: "$#####",
+					dataPoints: []
+				}]
 			}
 		}
 	}
 	,methods: {
 		generateGraph() {
-			console.log(this.dataPoints);
+			// console.log(this.dataPoints);
 			let tempData = [];
 			this.dataPoints.forEach((item,index) => {
 				if(typeof tempData[item.category] === 'undefined') {
@@ -61,29 +67,37 @@ Vue.component('budget-graph', {
 				}
 				tempData[item.category].cost += item.cost * item.count;
 			})
-			// console.log(tempData);
-			for(let i in tempData) {
-				if(tempData[i].cost <= 0) {
-					console.log(tempData[i]);
+			let sortedData = [];
+			for (item in tempData) {
+				sortedData.push(tempData[item]);
+			}
+			sortedData.sort(function (a,b) {return a.cost - b.cost});
+			let pos = 0;
+			for(let i in sortedData) {
+				if(sortedData[i].cost <= 0) {
+					console.log(sortedData[i]);
 					continue;
 				}
 				let item = {
-					type: "stackedColumn100",
-					showInLegend: true,
-					name: tempData[i].name,
-					dataPoints: [{
-						label: this.monthStruct[this.month],
-						y: tempData[i].cost,
-						yValueFormatString: "$#####"
-					}]
+					label: sortedData[i].name,
+					x: pos,
+					y: sortedData[i].cost,
 				}
-				this.options.data.push(item);
+				this.options.data[0].dataPoints.push(item);
+				// this.options.axisX.maximum = i;
+				pos++;
 			}
-			var chart = new CanvasJS.Chart("chart",this.options);
+			this.options.data[0].name = this.currentMonth;
+			var chart = new CanvasJS.Chart("barChart",this.options);
 			chart.render();
 		}
 		,toggleTooltip() {
 			$("#chart").CanvasJSChart().toolTip.shared = $("#chart").CanvasJSChart().toolTip.shared;
+		}
+	}
+	,computed: {
+		currentMonth() {
+			return this.monthStruct[this.month];
 		}
 	}
 })

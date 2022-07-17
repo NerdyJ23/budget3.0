@@ -4,9 +4,9 @@ Vue.component('budget-graph', {
 		<v-card-title>
 			{{monthStruct[month]}}
 		</v-card-title>
-		<v-card-text>
-			<div id="barChart" class="chart" style="width:50%"></div>
-			<div id="pieChart" style="width:50%"></div>
+		<v-card-text :style="chartHeight">
+			<div id="barChart" class="chart" style="width:40%"></div>
+			<div id="pieChart" style="width:40%; position:absolute; right:0"></div>
 		</v-card-text>
 	</v-card>
 	`
@@ -24,11 +24,9 @@ Vue.component('budget-graph', {
 			monthStruct: ['January','February','March','April','May','June','July','August','September','October','November','December'],
 			month: 0,
 			year: 0000,
+			height: 0,
 			options: {
 				animationEnabled: true,
-				title: {
-					text: "Budget"
-				},
 				labels: [],
 				type: 'bar',
 				axisX: {
@@ -37,13 +35,9 @@ Vue.component('budget-graph', {
 				axisY: {
 					suffix: "$"
 				},
-				toolTip: {
-					shared: true,
-					reversed: true
-				},
 				legend: {
-					horizonalAlign: "left",
-					reversed: true
+					horizontalAlign: "right",
+					verticalAlign: "center"
 				},
 				data: [{
 					type: "column",
@@ -51,12 +45,12 @@ Vue.component('budget-graph', {
 					yValueFormatString: "$#####",
 					dataPoints: []
 				}]
-			}
+			},
+			chartRef: null
 		}
 	}
 	,methods: {
 		generateGraph() {
-			// console.log(this.dataPoints);
 			let tempData = [];
 			this.dataPoints.forEach((item,index) => {
 				if(typeof tempData[item.category] === 'undefined') {
@@ -79,6 +73,8 @@ Vue.component('budget-graph', {
 					continue;
 				}
 				let item = {
+					legendText: sortedData[i].name,
+					name: sortedData[i].name,
 					label: sortedData[i].name,
 					x: pos,
 					y: sortedData[i].cost,
@@ -88,16 +84,28 @@ Vue.component('budget-graph', {
 				pos++;
 			}
 			this.options.data[0].name = this.currentMonth;
-			var chart = new CanvasJS.Chart("barChart",this.options);
-			chart.render();
-		}
-		,toggleTooltip() {
-			$("#chart").CanvasJSChart().toolTip.shared = $("#chart").CanvasJSChart().toolTip.shared;
+			var barChart = new CanvasJS.Chart("barChart",this.options);
+			barChart.render();
+
+			let newoptions = $.extend(true, {}, this.options);
+			newoptions.data[0].type = "pie";
+			var pieChart = new CanvasJS.Chart('pieChart', newoptions);
+			pieChart.render();
+
+			this.chartRef = pieChart;
 		}
 	}
 	,computed: {
 		currentMonth() {
 			return this.monthStruct[this.month];
+		}
+		,chartHeight() {
+			let temp = 0;
+			try {
+				temp = this.chartRef.get("height");
+			} catch(err) {
+			}
+			return `height: ${temp + 25}`;
 		}
 	}
 })

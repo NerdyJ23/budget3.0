@@ -4,9 +4,21 @@ Vue.component('budget-graph', {
 		<v-card-title>
 			{{monthStruct[month]}}
 		</v-card-title>
-		<v-card-text :style="chartHeight">
-			<div id="barChart" class="chart" style="width:40%"></div>
-			<div id="pieChart" style="width:40%; position:absolute; right:0"></div>
+		<v-card-text>
+			<div>
+			Chart Type:
+				<v-switch
+					v-model=options.type
+					false-value="column"
+					true-value="pie"
+					:label="options.type === 'column' ? 'Column' : 'Pie'"
+				>
+
+				</v-switch>
+			</div>
+			<div :style="chartHeight">
+				<div id="budgetChart" class="chart" style="width:50%"></div>
+			</div>
 		</v-card-text>
 	</v-card>
 	`
@@ -25,12 +37,14 @@ Vue.component('budget-graph', {
 			month: 0,
 			year: 0000,
 			height: 0,
+			sortedData: null,
 			options: {
 				animationEnabled: true,
-				labels: [],
-				type: 'bar',
+				animationDuration: 500,
+				type: 'column',
 				axisX: {
-					title: "Month"
+					title: "Month",
+					interval: 0
 				},
 				axisY: {
 					suffix: "$"
@@ -39,60 +53,82 @@ Vue.component('budget-graph', {
 					horizontalAlign: "right",
 					verticalAlign: "center"
 				},
-				data: [{
-					type: "column",
-					showInLegend: true,
-					yValueFormatString: "$#####",
-					dataPoints: []
-				}]
+				data: []
 			},
 			chartRef: null
 		}
 	}
 	,methods: {
 		generateGraph() {
-			let tempData = [];
-			this.dataPoints.forEach((item,index) => {
-				if(typeof tempData[item.category] === 'undefined') {
-					tempData[item.category] = {
-						name: item.category,
-						cost: 0
+			this.options.data = [];
+			if(this.sortedData === null) {
+				let tempData = [];
+				this.dataPoints.forEach((item,index) => {
+					if(typeof tempData[item.category] === 'undefined') {
+						tempData[item.category] = {
+							name: item.category,
+							cost: 0
+						}
 					}
+					tempData[item.category].cost += item.cost * item.count;
+				})
+				this.sortedData = [];
+				for (item in tempData) {
+					this.sortedData.push(tempData[item]);
 				}
-				tempData[item.category].cost += item.cost * item.count;
-			})
-			let sortedData = [];
-			for (item in tempData) {
-				sortedData.push(tempData[item]);
+				this.sortedData.sort(function (a,b) {return a.cost - b.cost});
 			}
-			sortedData.sort(function (a,b) {return a.cost - b.cost});
 			let pos = 0;
-			for(let i in sortedData) {
-				if(sortedData[i].cost <= 0) {
-					console.log(sortedData[i]);
-					continue;
+
+			if(this.options.type === 'pie') {
+				this.options.data.push({
+					type: "pie",
+					showInLegend: true,
+					yValueFormatString: "$#####",
+					dataPoints: []
+				});
+				for(let i in this.sortedData) {
+					if(this.sortedData[i].cost <= 0) {
+						console.log(this.sortedData[i]);
+						continue;
+					}
+					let item = {
+						legendText: this.sortedData[i].name,
+						name: this.sortedData[i].name,
+						label: this.sortedData[i].name,
+						x: pos,
+						y: this.sortedData[i].cost,
+					}
+					this.options.data[0].dataPoints.push(item);
+					pos++;
 				}
-				let item = {
-					legendText: sortedData[i].name,
-					name: sortedData[i].name,
-					label: sortedData[i].name,
-					x: pos,
-					y: sortedData[i].cost,
+			} else if (this.options.type === 'column') {
+				this.options.data = [];
+				for(let i in this.sortedData) {
+					if(this.sortedData[i].cost <= 0) {
+						console.log(this.sortedData[i]);
+						continue;
+					}
+					let item = {
+						type: 'column',
+						legendText: this.sortedData[i].name,
+						name: this.sortedData[i].name,
+						yValueFormatString: "$#####",
+						showInLegend: true,
+						dataPoints:[{
+							label: this.sortedData[i].name,
+							x: pos,
+							y: this.sortedData[i].cost
+						}]
+					}
+					this.options.data.push(item);
+					pos++;
 				}
-				this.options.data[0].dataPoints.push(item);
-				// this.options.axisX.maximum = i;
-				pos++;
 			}
-			this.options.data[0].name = this.currentMonth;
-			var barChart = new CanvasJS.Chart("barChart",this.options);
-			barChart.render();
+			var chart = new CanvasJS.Chart('budgetChart', this.options);
+			chart.render();
 
-			let newoptions = $.extend(true, {}, this.options);
-			newoptions.data[0].type = "pie";
-			var pieChart = new CanvasJS.Chart('pieChart', newoptions);
-			pieChart.render();
-
-			this.chartRef = pieChart;
+			this.chartRef = chart;
 		}
 	}
 	,computed: {
@@ -106,6 +142,11 @@ Vue.component('budget-graph', {
 			} catch(err) {
 			}
 			return `height: ${temp + 25}`;
+		}
+	}
+	,watch: {
+		'options.type'() {
+			this.generateGraph();
 		}
 	}
 })

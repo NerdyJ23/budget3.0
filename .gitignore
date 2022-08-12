@@ -1,1 +1,15 @@
 .htaccess
+/AJAX/api/config/app_local.php
+/AJAX/api/config/.env
+/AJAX/api/logs/
+/AJAX/api/tmp/
+/AJAX/api/vendor/
+
+/AJAX/api/.*
+/AJAX/api/node_modules/
+/AJAX/api/yarn-*
+/AJAX/api/Icon
+
+/AJAX/api/*.db
+/site/node_modules/
+/AJAX/composer.phar

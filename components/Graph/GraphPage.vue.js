@@ -7,7 +7,7 @@ template: `
 ,data: function () {
 	return {
 		graphData: {},
-		
+
 	}
 }
 });

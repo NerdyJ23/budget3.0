@@ -25,6 +25,7 @@
 <script>
 export default {
 	mounted() {
+		console.log(this.dataPoints);
 		this.generateGraph();
 	}
 	,props: {
@@ -65,15 +66,19 @@ export default {
 			this.options.data = [];
 			if(this.sortedData === null) {
 				let tempData = [];
-				this.dataPoints.forEach((item,index) => {
-					if(typeof tempData[item.category] === 'undefined') {
-						tempData[item.category] = {
-							name: item.category,
-							cost: 0
+				for(let receipt in this.dataPoints) {
+					console.log(this.dataPoints[receipt]);
+					for(let item in this.dataPoints[receipt].items) {
+						console.log(this.dataPoints[receipt].items[item]);
+						if(typeof this.dataPoints[receipt].items[item].category === 'None') {
+							tempData.push( {
+								name: item.category,
+								cost: 0
+							});
 						}
+						tempData[item.category].cost += item.cost * item.count;
 					}
-					tempData[item.category].cost += item.cost * item.count;
-				})
+				}
 				this.sortedData = [];
 				for (item in tempData) {
 					this.sortedData.push(tempData[item]);

@@ -21,10 +21,15 @@ class ReceiptsController extends ApiController {
 		$page = $this->request->getQuery('page') == null ? 1 : $this->request->getQuery('page');
 		$count = $this->request->getQuery('count') == null ? false : true;
 
+		$year = $this->request->getQuery('year') == null ?  date('y') : $this->request->getQuery('year');
+		$month = $this->request->getQuery('month') == null ?  date('m') : $this->request->getQuery('month');
+
 		$query = $this->Receipts->find('all')
+			->where(['month(Receipts.Date) =' => $month],['year(Receipts.Date) =' => $year])
 			->contain(['Items'])
 			->limit($limit)
 			->page($page);
+
 		$data = $query->all()->toArray();
 		$result = [];
 

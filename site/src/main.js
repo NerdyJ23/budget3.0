@@ -6,6 +6,8 @@ import App from './App.vue'
 import Home from './pages/Home';
 import NotFoundPage from './pages/NotFoundPage';
 import GraphPage from './pages/GraphPage';
+import ReceiptListPage from './pages/ReceiptListPage';
+
 import vuetify from './plugins/vuetify'
 import store from './store'
 // import '@babel/polyfill'
@@ -16,6 +18,8 @@ Vue.use(VueRouter);
 const routes = [
 	{path: '/', component: Home},
 	{path: '/graph', component: GraphPage},
+	{path: '/receipt', component: ReceiptListPage},
+	// {path: '/receipt/:receiptid', component: Receipt},
 
 	{path: '*', component: NotFoundPage},
 ];

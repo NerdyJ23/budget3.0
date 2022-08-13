@@ -1,5 +1,5 @@
 <template>
-<v-card>
+	<v-card>
 		<v-card-title>
 			{{monthStruct[month]}}
 		</v-card-title>
@@ -15,7 +15,7 @@
 
 				</v-switch>
 			</div>
-			<div :style="chartHeight">
+			<div :style=chartHeight>
 				<div id="budgetChart" class="chart" style="width:50%"></div>
 			</div>
 		</v-card-text>
@@ -68,19 +68,20 @@ export default {
 				let tempData = [];
 				for(let receipt in this.dataPoints) {
 					console.log(this.dataPoints[receipt]);
-					for(let item in this.dataPoints[receipt].items) {
-						console.log(this.dataPoints[receipt].items[item]);
-						if(typeof this.dataPoints[receipt].items[item].category === 'None') {
-							tempData.push( {
+					for(let i in this.dataPoints[receipt].items) {
+						const item = this.dataPoints[receipt].items[i];
+						console.log(item);
+						if(typeof tempData[item.category] === 'undefined') {
+							tempData[item.category] = {
 								name: item.category,
 								cost: 0
-							});
+							};
 						}
 						tempData[item.category].cost += item.cost * item.count;
 					}
 				}
 				this.sortedData = [];
-				for (item in tempData) {
+				for (let item in tempData) {
 					this.sortedData.push(tempData[item]);
 				}
 				this.sortedData.sort(function (a,b) {return a.cost - b.cost});
@@ -148,7 +149,7 @@ export default {
 				temp = this.chartRef.get("height");
 			} catch(err) {
 			}
-			return `height: ${temp + 25}`;
+			return `height: ${temp + 25}px`;
 		}
 	}
 	,watch: {

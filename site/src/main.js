@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import NotFoundPage from './pages/NotFoundPage';
 import GraphPage from './pages/GraphPage';
 import ReceiptListPage from './pages/ReceiptListPage';
-
+import ReceiptPage from './pages/ReceiptPage';
 import vuetify from './plugins/vuetify'
 import store from './store'
 // import '@babel/polyfill'
@@ -19,7 +19,7 @@ const routes = [
 	{path: '/', component: Home},
 	{path: '/graph', component: GraphPage},
 	{path: '/receipt', component: ReceiptListPage},
-	// {path: '/receipt/:receiptid', component: Receipt},
+	{path: '/receipt/:receiptid', component: ReceiptPage},
 
 	{path: '*', component: NotFoundPage},
 ];

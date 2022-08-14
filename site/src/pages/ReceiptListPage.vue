@@ -1,20 +1,17 @@
 <template>
-	<v-card>
-		<v-card-title>Receipts List</v-card-title>
+<div>
+	<span class="h2">Receipt List</span>
+	<v-card class="ma-3" v-for="receipt in receipts" dense>
+		<v-card-title>{{receipt.name}}</v-card-title>
 		<v-card-text>
-			<div v-for="receipt in receipts">
-				<v-list-item>
-					<v-list-item-content>
-						<v-list-item-title>
-							<v-btn :to="link" text>
-								${{receipt.cost}} - {{receipt.name}}
-							</v-btn>
-						</v-list-item-title>
-					</v-list-item-content>
-				</v-list-item>
-			</div>
+			<v-row class="text-subtitle">{{readableDate(receipt.date)}}</v-row>
+			<v-row>${{receipt.cost.toFixed(2)}}</v-row>
 		</v-card-text>
+		<v-card-actions>
+			<v-btn :to="'/receipt/' + receipt.id" text> Expand </v-btn>
+		</v-card-actions>
 	</v-card>
+</div>
 </template>
 
 <script>
@@ -51,12 +48,32 @@ export default {
 				console.error(err);
 				this.loaded = true;
 			})
+		},
+		readableDate(d) {
+			const tempDate = new Date(d);
+			const date = tempDate.getDate();
+
+			let dateExt = 'th'
+			if(date <= 10 || date > 20) {
+				//get last number of date
+				switch (parseInt(String(date).slice(-1))) {
+					case 1:
+						dateExt = 'st';
+						break;
+					case 2:
+						dateExt = 'nd';
+						break;
+					case 3:
+						dateExt = 'rd';
+						break;
+					default:
+						break;
+				}
+			}
+			return `${date}${dateExt} ${this.$store.state.months[tempDate.getMonth()]}`;
 		}
 	},
 	computed: {
-		link() {
-			return `/receipt/${this.receipt.id}`;
-		}
 	}
 }
 </script>

@@ -36,7 +36,7 @@ export default {
 	}
 	,data: function () {
 		return {
-			monthStruct: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+			monthStruct: this.$store.state.months,
 			month: 0,
 			year: 0,
 			height: 0,

@@ -1,7 +1,7 @@
 <template>
 <div>
     <v-dialog
-		:value="visible"
+		v-model="visible"
 		max-width="75vw"
     >
         <v-card>
@@ -33,7 +33,18 @@
         </v-card>
     </v-dialog>
 	<v-dialog v-model="datePick" width="50vw">
-		<v-date-picker v-model="receipt.date" full-width></v-date-picker>
+		<v-date-picker v-model="receipt.date" full-width>
+			<template v-slot="{item}">
+				<v-row>
+					<v-col cols="12" class="d-flex align-end">
+						<v-spacer></v-spacer>
+						<v-btn class="px-2 mx-2" @click.stop="datePick = false">Save</v-btn>
+					</v-col>
+				</v-row>
+
+			</template>
+
+		</v-date-picker>
 	</v-dialog>
 </div>
 </template>
@@ -56,6 +67,7 @@ export default {
 				id: 0
 			},
 			receiptRef: {},
+			csrfToken: this.$store.state.csrfToken,
 			options: {
 				mode: ''
 			}
@@ -78,6 +90,29 @@ export default {
 		},
 		save() {
 			//ping to place
+			let formData = new FormData();
+			formData.append('csrfToken', this.$store.state.csrfToken);
+			formData.append('receipt', JSON.stringify(this.receipt));
+			console.log(`before PATCH: ${this.$store.state.csrfToken}`);
+			console.log(`${this.$store.state.api}/receipt/${this.receipt.id}`);
+			fetch(`${this.$store.state.api}/receipt/${this.receipt.id}`, {
+				method: 'PATCH',
+				headers: {
+					'X-CSRF-TOKEN' : this.$store.state.csrfToken,
+					'Set-Cookie' : `csrfToken=${this.$store.state.csrfToken}`
+				},
+				body: formData
+			}).then(response => {
+				if (response.status === 200) {
+					return response.json();
+				} else {
+					throw new Error();
+				}
+			}).then(data => {
+				console.log(data);
+			}).catch(err => {
+				console.error(err);
+			})
 			this.hide();
 		}
 	}

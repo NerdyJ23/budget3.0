@@ -146,7 +146,10 @@ export default {
 			}).then(data => {
 
 				this.receipts = data.result;
-
+				if(typeof this.$store.state.csrfToken === 'undefined') {
+					this.$store.state.csrfToken = data.csrfToken;
+					document.cookie="csrfToken=" + data.csrfToken;
+				}
 				for(let y in data.years) {
 					this.years.push(data.years[y].date);
 				}
@@ -200,7 +203,7 @@ export default {
 				name: receipt.name,
 				date: receipt.date
 			};
-			console.log(receipt);
+			// console.log(receipt);
 		}
 	},
 	watch: {

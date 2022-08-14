@@ -1,16 +1,54 @@
 <template>
 <div>
-	<span class="h2">Receipt List</span>
-	<v-card class="ma-3" v-for="receipt in receipts" dense>
-		<v-card-title>{{receipt.name}}</v-card-title>
-		<v-card-text>
-			<v-row class="text-subtitle">{{readableDate(receipt.date)}}</v-row>
-			<v-row>${{receipt.cost.toFixed(2)}}</v-row>
-		</v-card-text>
-		<v-card-actions>
-			<v-btn :to="'/receipt/' + receipt.id" text> Expand </v-btn>
-		</v-card-actions>
-	</v-card>
+<v-card class="px-4">
+	<v-card-title>
+		<v-row>
+			<v-col cols="2">
+				Receipts
+			</v-col>
+			<v-col cols="10">
+				<v-text-field
+				v-model="search"
+				append-icon="mdi-magnify"
+				></v-text-field>
+			</v-col>
+		</v-row>
+	</v-card-title>
+	<v-card-text>
+		<v-data-table
+		dense
+		:headers="headers"
+		:search="search"
+		:items="receipts"
+		group-by="date"
+	    show-expand
+
+		>
+		<template v-slot:item.cost="{item}">
+			${{item.cost.toFixed(2)}}
+		</template>
+
+		<template v-slot:expanded-item="{ headers, item }">
+			<td :colspan="headers.length">
+				<v-row v-for="i in item.items" >
+					<v-col cols="1">
+						{{i.count}}x
+					</v-col>
+					<v-col cols="4">
+						{{i.name}}
+					</v-col>
+					<v-col cols="4">
+						{{i.category}}
+					</v-col>
+					<v-col cols="2">
+						${{(i.count * i.cost).toFixed(2)}}
+					</v-col>
+				</v-row>
+			</td>
+		</template>
+		</v-data-table>
+	</v-card-text>
+</v-card>
 </div>
 </template>
 
@@ -27,6 +65,24 @@ export default {
 	data: function() {
 		return {
 			receipts: [],
+			headers: [{
+				text: 'Name',
+				value: 'name'
+			},
+			{
+				text: 'Cost',
+				value: 'cost'
+			},
+			{
+				text: 'Date',
+				value: 'date'
+			},
+			{
+				text: 'Category',
+				value: 'category'
+			}
+			],
+			search: '',
 			apiUrl: this.$store.state.api
 		}
 	},
@@ -41,7 +97,6 @@ export default {
 					throw new Error();
 				}
 			}).then(data => {
-				console.log(data);
 				this.receipts = data.result;
 				this.loaded = true;
 			}).catch(err => {

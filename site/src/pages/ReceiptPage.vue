@@ -1,8 +1,11 @@
 <template>
 <div>
-<v-btn to="/receipt"> Back </v-btn>
 	<v-card class="mx-6">
-		<v-card-title>{{receipt.name}}</v-card-title>
+		<v-card-title>
+		<v-btn to="/receipt" icon class="ma-2">
+			<v-icon>mdi-keyboard-backspace</v-icon>
+		</v-btn>
+		{{receipt.name}}</v-card-title>
 		<v-card-text>
 			<v-divider class="mb-4"></v-divider>
 			<v-row v-for="item in receipt.items">

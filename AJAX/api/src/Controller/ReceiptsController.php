@@ -56,16 +56,13 @@ class ReceiptsController extends ApiController {
 		$this->set('result', $this->encodeReceipt($data[0]));
 	}
 	public function getYears() {
-		$query = $this->Receipts->group('year(Receipts.Date)');
+		$query = $this->Receipts->find()
+		->select([
+			'date' => 'year(Date)'
+		])
+		->group('Year(date)');
 		$data = $query->all()->toArray();
-
-		$result = [];
-		foreach($data as $item) {
-			$datestr = date('Y', strtotime($item->Date));
-			$result[$datestr] = $datestr;
-		}
-
-		$this->set('years', $result);
+		$this->set('years', $data);
 	}
 	public function count() {
 		$this->set(['count' => $this->Receipts->find('all')->count()]);

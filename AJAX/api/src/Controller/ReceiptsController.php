@@ -64,10 +64,28 @@ class ReceiptsController extends ApiController {
 		$data = $query->all()->toArray();
 		$this->set('years', $data);
 	}
-	public function count() {
-		$this->set(['count' => $this->Receipts->find('all')->count()]);
-	}
 
+	public function edit($id) {
+		$safeid = (new EncryptionController)->decrypt($id);
+		if(is_bool($safeid) == true) {
+			$this->set('code',200);
+			return;
+		}
+		$name = $this->request->getData('name');
+		$date = $this->request->getData('date');
+		$query = $this->Receipts->find('all')
+			->where(['Receipts.ID = ' => $safeid])
+			->limit(1);
+
+		$data = $query->all()->toArray();
+		if($data != false) {
+			$this->set('code',200);
+			return;
+		}
+		$this->set('name',$name);
+		$this->set('date',$date);
+		$this->set('unique','test');
+	}
 	private function encodeReceipt($receipt) {
 		return [
 			'id' => $receipt->get('id'),

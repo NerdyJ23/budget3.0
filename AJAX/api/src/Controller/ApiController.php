@@ -16,6 +16,11 @@ class ApiController extends Controller {
         $this->viewBuilder()->setClassName('Json');
 	}
 	public function beforeFilter(EventInterface $event) {
+		if($this->_isPushingData()) {
+
+		} else if ($this->_isListingData()) {
+			$this->set('csrfToken', $this->request->getAttribute('csrfToken'));
+		}
 		$this->_returnJSON();
 	}
 	protected function _returnJSON() {
@@ -23,6 +28,12 @@ class ApiController extends Controller {
 		->allowOrigin('*')
 		->build();
 		$this->viewBuilder()->setOption('serialize',true);
+	}
+	protected function _isPushingData() {
+		return ($this->request->is('post') || $this->request->is('patch'));
+	}
+	protected function _isListingData() {
+		return ($this->request->is('get') || $this->request->is('list'));
 	}
 }
 

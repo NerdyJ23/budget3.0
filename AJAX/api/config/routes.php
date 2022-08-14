@@ -13,6 +13,7 @@ return static function (RouteBuilder $routes) {
 
 		$builder->scope('/receipt', function (RouteBuilder $builder) {
 			$builder->connect('/', 'Receipts::list');
+			$builder->patch('/{id}', 'Receipts::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Receipts::get')->setPass(['id']);
 		});
 		$builder->connect('/{controller}', ['action' => 'list']);

@@ -3,10 +3,12 @@
 <v-card class="px-4">
 	<v-card-title>
 		<v-row>
-			<v-col cols="2">
-				Receipts
+			<v-col cols="1" class="d-flex align-center">
+				<span>
+					Receipts
+				</span>
 			</v-col>
-			<v-col cols="10">
+			<v-col cols="11">
 				<v-text-field
 				v-model="search"
 				append-icon="mdi-magnify"
@@ -16,36 +18,54 @@
 	</v-card-title>
 	<v-card-text>
 		<v-data-table
-		dense
 		:headers="headers"
 		:search="search"
 		:items="receipts"
 		group-by="date"
-	    show-expand
-
+	    :single-expand="true"
+		show-expand
+		:loading="!loaded"
 		>
-		<template v-slot:item.cost="{item}">
-			${{item.cost.toFixed(2)}}
-		</template>
-
-		<template v-slot:expanded-item="{ headers, item }">
-			<td :colspan="headers.length">
-				<v-row v-for="i in item.items" >
+			<template v-slot:item.cost="{item}">
+				${{item.cost.toFixed(2)}}
+			</template>
+			<template v-slot:item.actions="{item}">
+			<div class="justify-end">
+				<v-btn icon><v-icon>mdi-pencil</v-icon></v-btn>
+				<v-btn icon><v-icon>mdi-delete</v-icon></v-btn>
+			</div>
+			</template>
+			<template v-slot:expanded-item="{ headers, item }">
+				<td :colspan="headers.length" class="py-4">
+				<v-row class="font-weight-black text-uppercase pt-2" dense>
 					<v-col cols="1">
-						{{i.count}}x
 					</v-col>
-					<v-col cols="4">
-						{{i.name}}
-					</v-col>
-					<v-col cols="4">
-						{{i.category}}
+					<v-col cols="5">
+						Name
 					</v-col>
 					<v-col cols="2">
-						${{(i.count * i.cost).toFixed(2)}}
+						Cost
+					</v-col>
+					<v-col cols="2">
+						Category
 					</v-col>
 				</v-row>
-			</td>
-		</template>
+				<v-divider class="pb-2"></v-divider>
+				<v-row v-for="a in item.items" :key="a.id" dense>
+					<v-col cols="1">
+					</v-col>
+					<v-col cols="5">
+						{{a.count}}x {{a.name}}
+					</v-col>
+					<v-col cols="2">
+						${{(a.count).toFixed(2)}}
+					</v-col>
+					<v-col cols="2">
+						{{a.category}}
+					</v-col>
+				</v-row>
+				</td>
+			</template>
 		</v-data-table>
 	</v-card-text>
 </v-card>
@@ -80,14 +100,19 @@ export default {
 			{
 				text: 'Category',
 				value: 'category'
+			},
+			{
+				text: 'Actions',
+				value: 'actions'
 			}
 			],
 			search: '',
-			apiUrl: this.$store.state.api
+			apiUrl: this.$store.state.api,
+			loaded: false
 		}
 	},
 	methods: {
-		loadReceipts() {
+		async loadReceipts() {
 			fetch(`${this.apiUrl}/receipt?month=5&year=2021`, {
 				method: 'GET',
 			}).then(response => {
@@ -97,6 +122,7 @@ export default {
 					throw new Error();
 				}
 			}).then(data => {
+				console.log(data);
 				this.receipts = data.result;
 				this.loaded = true;
 			}).catch(err => {

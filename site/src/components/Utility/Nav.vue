@@ -1,5 +1,5 @@
 <template>
-	<v-toolbar elevation=2>
+	<v-toolbar elevation="6">
 		<v-toolbar-title class="text-h4">
 			<span> Budgeting! </span>
 		</v-toolbar-title>

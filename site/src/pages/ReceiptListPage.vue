@@ -4,11 +4,22 @@
 	<v-card-title>
 		<v-row>
 			<v-col cols="1" class="d-flex align-center">
-				<span>
-					Receipts
-				</span>
+				<v-select
+				:items="months"
+				v-model="selectedMonth"
+				@:change="loadReceipts()"
+				label="Month"
+				></v-select>
 			</v-col>
-			<v-col cols="11">
+			<v-col cols="1" class="d-flex align-center">
+				<v-select
+				:items="years"
+				v-model="selectedYear"
+				@:change="loadReceipts()"
+				label="Year"
+				></v-select>
+			</v-col>
+			<v-col cols="10">
 				<v-text-field
 				v-model="search"
 				append-icon="mdi-magnify"
@@ -80,6 +91,7 @@ export default {
 		Receipt
 	},
 	mounted() {
+		this.init();
 		this.loadReceipts();
 	},
 	data: function() {
@@ -108,12 +120,20 @@ export default {
 			],
 			search: '',
 			apiUrl: this.$store.state.api,
-			loaded: false
+			loaded: false,
+			years: [],
+			selectedYear: 0,
+			selectedMonth: 0,
+			months: this.$store.state.months
 		}
 	},
 	methods: {
-		async loadReceipts() {
-			fetch(`${this.apiUrl}/receipt?month=5&year=2021`, {
+		loadReceipts() {
+			this.loaded = false;
+			const today = new Date();
+			const selectedMonth = this.months.indexOf(this.selectedMonth) > -1 ? this.months.indexOf(this.selectedMonth) : today.getMonth();
+
+			fetch(`${this.apiUrl}/receipt?month=${selectedMonth}&year=${this.selectedYear}`, {
 				method: 'GET',
 			}).then(response => {
 				if (response.status === 200) {
@@ -122,13 +142,31 @@ export default {
 					throw new Error();
 				}
 			}).then(data => {
-				console.log(data);
+
 				this.receipts = data.result;
+
+				for(let y in data.years) {
+					this.years.push(data.years[y].date);
+				}
+
+				let thisYear = this.years.find((year) => {
+					return year === today.getFullYear()
+				});
+
+				if(this.years.length === 0 || typeof thisYear === 'undefined') {
+					this.years.push(today.getFullYear());
+				}
+
 				this.loaded = true;
 			}).catch(err => {
 				console.error(err);
 				this.loaded = true;
 			})
+		},
+		init() {
+			const today = new Date();
+			this.selectedMonth = this.months[today.getMonth()];
+			this.selectedYear = today.getFullYear();
 		},
 		readableDate(d) {
 			const tempDate = new Date(d);
@@ -154,7 +192,13 @@ export default {
 			return `${date}${dateExt} ${this.$store.state.months[tempDate.getMonth()]}`;
 		}
 	},
-	computed: {
+	watch: {
+		selectedMonth(old,current) {
+			this.loadReceipts();
+		},
+		selectedYear(old,current) {
+			this.loadReceipts();
+		}
 	}
 }
 </script>

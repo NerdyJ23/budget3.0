@@ -42,8 +42,8 @@
 			</template>
 			<template v-slot:item.actions="{item}">
 			<div class="justify-end">
-				<v-btn icon><v-icon>mdi-pencil</v-icon></v-btn>
-				<v-btn icon><v-icon>mdi-delete</v-icon></v-btn>
+				<v-btn icon @click.stop="editReceipt(item)"><v-icon color="blue lighten-2">mdi-pencil</v-icon></v-btn>
+				<v-btn icon><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
 			</div>
 			</template>
 			<template v-slot:expanded-item="{ headers, item }">
@@ -69,7 +69,7 @@
 						{{a.count}}x {{a.name}}
 					</v-col>
 					<v-col cols="2">
-						${{(a.count).toFixed(2)}}
+						${{(a.count * a.cost).toFixed(2)}}
 					</v-col>
 					<v-col cols="2">
 						{{a.category}}
@@ -80,15 +80,17 @@
 		</v-data-table>
 	</v-card-text>
 </v-card>
+<ReceiptDialog ref="receiptDialog"></ReceiptDialog>
 </div>
 </template>
 
 <script>
 import Receipt from '../components/Receipt';
-
+import ReceiptDialog from '../components/Receipt/ReceiptDialog';
 export default {
 	components: {
-		Receipt
+		Receipt,
+		ReceiptDialog
 	},
 	mounted() {
 		this.init();
@@ -165,8 +167,8 @@ export default {
 		},
 		init() {
 			const today = new Date();
-			this.selectedMonth = this.months[today.getMonth()];
-			this.selectedYear = today.getFullYear();
+			this.selectedMonth = 'June';//this.months[today.getMonth()];
+			this.selectedYear = 2021;//today.getFullYear();
 		},
 		readableDate(d) {
 			const tempDate = new Date(d);
@@ -190,6 +192,15 @@ export default {
 				}
 			}
 			return `${date}${dateExt} ${this.$store.state.months[tempDate.getMonth()]}`;
+		},
+		editReceipt(receipt) {
+			this.$refs.receiptDialog.show();
+			this.$refs.receiptDialog.receipt = {
+				id: receipt.id,
+				name: receipt.name,
+				date: receipt.date
+			};
+			console.log(receipt);
 		}
 	},
 	watch: {

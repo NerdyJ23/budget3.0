@@ -5,6 +5,7 @@
 /AJAX/api/tmp/
 /AJAX/api/vendor/
 
+/node_modules/*
 /AJAX/api/.*
 /AJAX/api/node_modules/
 /AJAX/api/yarn-*

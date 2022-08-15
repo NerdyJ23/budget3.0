@@ -19,6 +19,9 @@ return static function (RouteBuilder $routes) {
 
 		$builder->scope('/user', function (RouteBuilder $builder) {
 			$builder->connect('/', 'Users::list');
+			$builder->connect('/login/{username}', 'Users::login')->setPass(['username']); //change to mixed field later?
+			$builder->patch('/{id}', 'Users::edit')->setPass(['id']);
+			$builder->get('/{id}', 'Users::get')->setPass(['id']);
 		});
 		$builder->connect('/{controller}', ['action' => 'list']);
 

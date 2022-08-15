@@ -110,7 +110,7 @@ class ReceiptsController extends ApiController {
 		$receipt->setDate($newReceipt->date);
 		$result = $table->save($receipt);
 
-		if($result) {
+		if($result != false) {
 			$this->set('code',200);
 		} else {
 			$this->set('code',400);

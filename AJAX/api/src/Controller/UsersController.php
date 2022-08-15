@@ -24,7 +24,36 @@ class UsersController extends ApiController {
 	}
 
 	public function login($username) {
+		$pass = $this->request->getData('password');
+		$validUser = (new AuthenticationController)->validUser('admin',$pass);
+		$this->set('valid',$validUser);
 
+		if($validUser == true) {
+			$query = $this->Users->find('all')
+				->where(['Users.username = ' => $username])
+				->limit(1);
+			$data = $query->all()->toArray();
+			$user = $data[0];
+
+			$this->_loginAuth($user);
+		} else {
+			$this->set('code',403);
+		}
+	}
+
+	private function _loginAuth($newUser) {
+		$table = $this->getTableLocator()->get('Users');
+		$user = $table->get((new EncryptionController)->decrypt($newUser->id));
+		$user->token = (new AuthenticationController)->generateToken() . '';
+		$this->set('newuser', $user);
+
+		// $result = $table->save($user);
+
+		// if($result != false) {
+		// 	$this->set('code',200);
+		// } else {
+		// 	$this->set('code',400);
+		// }
 	}
 
 

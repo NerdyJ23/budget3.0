@@ -9,8 +9,11 @@ class AuthenticationController extends Controller {
 	public function initialize(): void {
 		parent::initialize();
 	}
+	public function generateToken(): string {
+		return bin2hex(random_bytes(16));
+	}
 
-	public function validToken($token): boolean {
+	public function validToken($token): bool {
 
 	}
 

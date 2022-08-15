@@ -28,6 +28,7 @@ class Receipt extends Entity {
 		$this->_fields['Location'] = $name;
 		$this->setDirty('Location');
 	}
+
 	public function setDate($date) {
 		$this->_fields['Date'] = $date;
 		$this->setDirty('Date');

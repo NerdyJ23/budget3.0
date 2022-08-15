@@ -6,17 +6,17 @@ use Cake\ORM\Entity;
 use App\Controller\Security\EncryptionController;
 
 class User extends Entity {
-	protected $_hidden = ['password', 'token'];
+	// protected $_hidden = ['password', 'token'];
 
 	protected $_accessible = [
-		'id' => true, //int
-		'username' => true, //varchar
+		'id' => false, //int
+		'username' => false, //varchar
 		'password' => false, //varchar hashed
-		'first_name' => false, //varchar
-		'last_name' => false, //varchar nullable
-		'token' => false, //varchar nullable
-		'token_valid_until' => false, //timestamp nullable
-		'last_logged_in' => false //timestamp nullable
+		'first_name' => true, //varchar
+		'last_name' => true, //varchar nullable
+		'token' => true, //varchar nullable
+		'token_valid_until' => true, //timestamp nullable
+		'last_logged_in' => true //timestamp nullable
 	];
 
 	protected function _getId() {

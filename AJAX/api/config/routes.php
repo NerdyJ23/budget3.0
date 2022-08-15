@@ -16,6 +16,10 @@ return static function (RouteBuilder $routes) {
 			$builder->patch('/{id}', 'Receipts::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Receipts::get')->setPass(['id']);
 		});
+
+		$builder->scope('/user', function (RouteBuilder $builder) {
+			$builder->connect('/', 'Users::list');
+		});
 		$builder->connect('/{controller}', ['action' => 'list']);
 
         // $builder->connect('/pages/*', 'Pages::display');

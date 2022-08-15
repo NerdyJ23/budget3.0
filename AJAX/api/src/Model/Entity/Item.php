@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 namespace App\Model\Entity;
 use Cake\ORM\Entity;
-use App\Controller\EncryptionController;
+use App\Controller\Security\EncryptionController;
 
 class Item extends Entity {
 	protected $_accessible = [

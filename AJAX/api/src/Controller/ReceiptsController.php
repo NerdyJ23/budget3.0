@@ -6,7 +6,7 @@ use Cake\View\JsonView;
 
 use Cake\Utility\Security;
 use Cake\Core\Configure;
-use App\Controller\EncryptionController;
+use App\Controller\Security\EncryptionController;
 
 class ReceiptsController extends ApiController {
 	public function initialize(): void {

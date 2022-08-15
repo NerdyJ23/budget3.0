@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Security;
 
 use Cake\Controller\Controller;
 
@@ -21,6 +21,10 @@ class EncryptionController extends Controller {
 
 	public function decrypt($value) {
 		return openssl_decrypt(base64_decode($value), $this::METHOD, $_ENV['SECURITY_SALT'], $options=0, $_ENV['SECURITY_SALT']);
+	}
+
+	public function hashPassword($pass) {
+		return $hashedPass = Security::hash($pass, null, true);
 	}
 }
 

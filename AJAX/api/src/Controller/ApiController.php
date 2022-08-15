@@ -16,11 +16,6 @@ class ApiController extends Controller {
         $this->viewBuilder()->setClassName('Json');
 	}
 	public function beforeFilter(EventInterface $event) {
-		if($this->_isPushingData()) {
-
-		} //else if ($this->_isListingData()) {
-			$this->set('csrfToken', $this->request->getAttribute('csrfToken'));
-		//}
 		$this->_returnJSON();
 	}
 	protected function _returnJSON() {

@@ -146,10 +146,9 @@ export default {
 			}).then(data => {
 
 				this.receipts = data.result;
-				if(typeof this.$store.state.csrfToken === 'undefined') {
-					this.$store.state.csrfToken = data.csrfToken;
-					document.cookie="csrfToken=" + data.csrfToken;
-				}
+				this.$store.commit('setToken',data.csrfToken);
+				document.cookie="csrfToken=" + data.csrfToken;
+				console.log(this.$store.state.csrfToken);
 				for(let y in data.years) {
 					this.years.push(data.years[y].date);
 				}
@@ -207,12 +206,12 @@ export default {
 		}
 	},
 	watch: {
-		selectedMonth(old,current) {
-			this.loadReceipts();
-		},
-		selectedYear(old,current) {
-			this.loadReceipts();
-		}
+		// selectedMonth(old,current) {
+		// 	this.loadReceipts();
+		// },
+		// selectedYear(old,current) {
+		// 	this.loadReceipts();
+		// }
 	}
 }
 </script>

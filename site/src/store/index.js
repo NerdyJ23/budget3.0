@@ -8,11 +8,15 @@ export default new Vuex.Store({
 	api: 'https://budget.jessprogramming.com:8080',
 	site: 'https://budget.jessprogramming.com',
 	months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-	weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+	weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+	csrfToken: null,
   },
   getters: {
   },
   mutations: {
+	setToken(state, x) {
+		state.csrfToken = x;
+	}
   },
   actions: {
   },

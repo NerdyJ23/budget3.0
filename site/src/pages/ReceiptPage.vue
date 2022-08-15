@@ -55,7 +55,8 @@ export default {
 			}).then(data => {
 				console.log(data);
 				this.receipt = data.result;
-				this.$store.state.csrfToken = data.csrfToken;
+				this.$store.commit('setToken',data.csrfToken);
+				// this.$store.state.csrfToken = data.csrfToken;
 			}).catch(err => {
 				console.error(err);
 			})

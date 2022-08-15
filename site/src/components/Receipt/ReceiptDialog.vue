@@ -67,7 +67,6 @@ export default {
 				id: 0
 			},
 			receiptRef: {},
-			csrfToken: this.$store.state.csrfToken,
 			options: {
 				mode: ''
 			}
@@ -91,17 +90,19 @@ export default {
 		save() {
 			//ping to place
 			let formData = new FormData();
-			formData.append('csrfToken', this.$store.state.csrfToken);
+			formData.append('_csrfToken', this.$store.state.csrfToken);
 			formData.append('receipt', JSON.stringify(this.receipt));
 			console.log(`before PATCH: ${this.$store.state.csrfToken}`);
 			console.log(`${this.$store.state.api}/receipt/${this.receipt.id}`);
 			fetch(`${this.$store.state.api}/receipt/${this.receipt.id}`, {
 				method: 'PATCH',
 				headers: {
-					'X-CSRF-TOKEN' : this.$store.state.csrfToken,
-					'Set-Cookie' : `csrfToken=${this.$store.state.csrfToken}`
+					'X-CSRF-TOKEN': this.$store.state.csrfToken,
+					// 'Set-Cookie': `csrfToken=${this.$store.state.csrfToken}`,
+					// 'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				body: formData
+
+				body: (new URLSearchParams(formData))
 			}).then(response => {
 				if (response.status === 200) {
 					return response.json();

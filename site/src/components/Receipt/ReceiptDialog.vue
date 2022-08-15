@@ -96,12 +96,6 @@ export default {
 			console.log(`${this.$store.state.api}/receipt/${this.receipt.id}`);
 			fetch(`${this.$store.state.api}/receipt/${this.receipt.id}`, {
 				method: 'PATCH',
-				headers: {
-					'X-CSRF-TOKEN': this.$store.state.csrfToken,
-					// 'Set-Cookie': `csrfToken=${this.$store.state.csrfToken}`,
-					// 'Content-Type': 'application/x-www-form-urlencoded'
-				},
-
 				body: (new URLSearchParams(formData))
 			}).then(response => {
 				if (response.status === 200) {

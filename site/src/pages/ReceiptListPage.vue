@@ -134,7 +134,7 @@ export default {
 			this.loaded = false;
 			const today = new Date();
 			const selectedMonth = this.months.indexOf(this.selectedMonth) > -1 ? this.months.indexOf(this.selectedMonth) : today.getMonth();
-
+			console.log('loading');
 			fetch(`${this.apiUrl}/receipt?month=${selectedMonth}&year=${this.selectedYear}`, {
 				method: 'GET',
 			}).then(response => {
@@ -146,9 +146,6 @@ export default {
 			}).then(data => {
 
 				this.receipts = data.result;
-				this.$store.commit('setToken',data.csrfToken);
-				document.cookie="csrfToken=" + data.csrfToken;
-				console.log(this.$store.state.csrfToken);
 				for(let y in data.years) {
 					this.years.push(data.years[y].date);
 				}
@@ -206,12 +203,16 @@ export default {
 		}
 	},
 	watch: {
-		// selectedMonth(old,current) {
-		// 	this.loadReceipts();
-		// },
-		// selectedYear(old,current) {
-		// 	this.loadReceipts();
-		// }
+		selectedMonth(old,current) {
+			if(this.loaded) {
+				this.loadReceipts();
+			}
+		},
+		selectedYear(old,current) {
+			if(this.loaded) {
+				this.loadReceipts();
+			}
+		}
 	}
 }
 </script>

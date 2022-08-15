@@ -187,6 +187,13 @@ ServerRequest::addDetector('tablet', function ($request) {
     return $detector->isTablet();
 });
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, PUT, PATCH, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: *');
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+	header("HTTP/1.1 200 OK");
+    exit(0);
+}
 /*
  * You can enable default locale format parsing by adding calls
  * to `useLocaleParser()`. This enables the automatic conversion of

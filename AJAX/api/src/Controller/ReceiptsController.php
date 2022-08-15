@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\View\JsonView;
+
 use Cake\Utility\Security;
 use Cake\Core\Configure;
 use App\Controller\EncryptionController;
@@ -71,20 +72,9 @@ class ReceiptsController extends ApiController {
 			$this->set('code',200);
 			return;
 		}
-		$name = $this->request->getData('name');
-		$date = $this->request->getData('date');
-		$query = $this->Receipts->find('all')
-			->where(['Receipts.ID = ' => $safeid])
-			->limit(1);
+		$receivedReceipt = json_decode($this->request->getData('receipt'));
+		$this->saveToReceipts($receivedReceipt);
 
-		$data = $query->all()->toArray();
-		if($data != false) {
-			$this->set('code',200);
-			return;
-		}
-		$this->set('name',$name);
-		$this->set('date',$date);
-		$this->set('unique','test');
 	}
 	private function encodeReceipt($receipt) {
 		return [
@@ -110,6 +100,21 @@ class ReceiptsController extends ApiController {
 			];
 		}
 		return $items;
+	}
+
+	private function saveToReceipts($newReceipt) {
+		$table = $this->getTableLocator()->get('Receipts');
+		$receipt = $table->get((new EncryptionController)->decrypt($newReceipt->id));
+
+		$receipt->setName($newReceipt->name);
+		$receipt->setDate($newReceipt->date);
+		$result = $table->save($receipt);
+
+		if($result) {
+			$this->set('code',200);
+		} else {
+			$this->set('code',400);
+		}
 	}
 }
 

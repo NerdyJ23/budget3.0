@@ -6,12 +6,12 @@ use App\Controller\EncryptionController;
 
 class Receipt extends Entity {
 	protected $_accessible = [
-		'ID' => true,
-		'User' => false,
-		'Location' => false,
-		'Cost' => false,
-		'Date' => false,
-		'Category' => false,
+		'ID' => false,
+		'User' => true,
+		'Location' => true,
+		'Cost' => true,
+		'Date' => true,
+		'Category' => true,
 	];
 
 	protected function _getId() {
@@ -22,6 +22,15 @@ class Receipt extends Entity {
 	}
 	protected function _getCategory() {
 		return $this->_fields['Category'] == null ? 'None' : $this->_fields['Category'];
+	}
+
+	public function setName($name) {
+		$this->_fields['Location'] = $name;
+		$this->setDirty('Location');
+	}
+	public function setDate($date) {
+		$this->_fields['Date'] = $date;
+		$this->setDirty('Date');
 	}
 }
 ?>

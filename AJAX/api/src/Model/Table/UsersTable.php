@@ -4,8 +4,9 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Utility\Text;
 use Cake\Event\EventInterface;
-use App\Controller\ApiController;
 
+use App\Controller\ApiController;
+use App\Model\Behavior\DeadlineTimestampBehavior;
 class UsersTable extends Table {
 	public function initialize(array $config): void {
 
@@ -13,13 +14,14 @@ class UsersTable extends Table {
 		$this->setDisplayField('first_name');
 		$this->setPrimaryKey('id');
 
-		$this->addBehavior('Timestamp',[
+		$this->addBehavior('Timestamp', [
 			'events' => [
 				'Model.beforeSave' => [
 					'last_logged_in' => 'always'
 				]
 			]
 		]);
+
 		$this->hasMany('Receipts')
 			->setForeignKey('User')
 			->setBindingKey('id');

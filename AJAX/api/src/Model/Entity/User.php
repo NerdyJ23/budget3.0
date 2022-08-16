@@ -32,5 +32,15 @@ class User extends Entity {
 		}
 		return $str;
 	}
+	public function setTokenTimeLimit($days) {
+        try {
+            intval($days);
+        } catch(Exception $e) {
+            return date('c', 0);
+        }
+
+        $today = date('c');
+        return date('c', strtotime($today . ' + ' . $days . 'days'));
+    }
 }
 ?>

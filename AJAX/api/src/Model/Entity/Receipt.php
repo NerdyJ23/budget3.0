@@ -6,6 +6,7 @@ use App\Controller\Security\EncryptionController;
 
 class Receipt extends Entity {
 	protected $_virtual = ['encrypted_id'];
+	protected $_hidden = ['encrypted_id'];
 
 	protected $_accessible = [
 		'ID' => false,

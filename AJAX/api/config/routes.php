@@ -16,10 +16,10 @@ return static function (RouteBuilder $routes) {
 			$builder->patch('/{id}', 'Receipts::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Receipts::get')->setPass(['id']);
 		});
+		$builder->connect('/login', 'Users::login'); //change to mixed field later?
 
 		$builder->scope('/user', function (RouteBuilder $builder) {
 			$builder->connect('/', 'Users::list');
-			$builder->connect('/login/{username}', 'Users::login')->setPass(['username']); //change to mixed field later?
 			$builder->patch('/{id}', 'Users::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Users::get')->setPass(['id']);
 		});

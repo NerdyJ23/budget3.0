@@ -19,9 +19,6 @@ class User extends Entity {
 		'last_logged_in' => true //timestamp nullable
 	];
 
-	// protected function _getId() {
-	// 	return ((new EncryptionController)->encrypt($this->_fields['id']));
-	// }
 	protected function _getEncryptedId() {
 		return ((new EncryptionController)->encrypt($this->_fields['id']));
 	}

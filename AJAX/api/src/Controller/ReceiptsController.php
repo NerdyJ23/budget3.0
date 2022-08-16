@@ -88,7 +88,7 @@ class ReceiptsController extends ApiController {
 	}
 	private function encodeReceipt($receipt) {
 		return [
-			'id' => $receipt->get('id'),
+			'id' => $receipt->get('encodedId'),
 			'userid' => $receipt->get('userId'),
 			'name' => $receipt->Location,
 			'cost' => $receipt->Cost,

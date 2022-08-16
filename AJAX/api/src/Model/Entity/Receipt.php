@@ -5,6 +5,8 @@ use Cake\ORM\Entity;
 use App\Controller\Security\EncryptionController;
 
 class Receipt extends Entity {
+	protected $_virtual = ['encrypted_id'];
+
 	protected $_accessible = [
 		'ID' => false,
 		'User' => true,
@@ -14,7 +16,7 @@ class Receipt extends Entity {
 		'Category' => true,
 	];
 
-	protected function _getId() {
+	protected function _getEncodedId() {
 		return ((new EncryptionController)->encrypt($this->_fields['ID']));
 	}
 	protected function _getUserId() {

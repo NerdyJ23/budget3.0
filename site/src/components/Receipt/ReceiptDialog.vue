@@ -90,9 +90,7 @@ export default {
 		save() {
 			//ping to place
 			let formData = new FormData();
-			formData.append('_csrfToken', this.$store.state.csrfToken);
 			formData.append('receipt', JSON.stringify(this.receipt));
-			console.log(`before PATCH: ${this.$store.state.csrfToken}`);
 			console.log(`${this.$store.state.api}/receipt/${this.receipt.id}`);
 			fetch(`${this.$store.state.api}/receipt/${this.receipt.id}`, {
 				method: 'PATCH',

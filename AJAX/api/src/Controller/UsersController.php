@@ -33,20 +33,37 @@ class UsersController extends ApiController {
 				->where(['Users.username = ' => $username])
 				->limit(1);
 			$data = $query->all()->toArray();
-			$user = $data[0];
 
-			$this->_loginAuth($user);
+			$this->set('after3', $this->_loginAuth($data[0]));
 		} else {
 			$this->set('code',403);
 		}
 	}
 
-	private function _loginAuth($newUser) {
-		$table = $this->getTableLocator()->get('Users');
-		$user = $table->get((new EncryptionController)->decrypt($newUser->id));
-		$user->token = (new AuthenticationController)->generateToken() . '';
-		$this->set('newuser', $user);
+	private function _loginAuth($user) {
+		// $this->set('param usr', $newUser);
+		$decrypted = intval((new EncryptionController)->decrypt($user->encryptedId));
+		$this->set('decrypted',$decrypted);
+		$this->set('before', $user->token);
 
+		$userTable = $this->getTableLocator()->get('Users');
+		$u = $userTable->get($user->id);
+		$userTable->patchEntity($u, ['token' => (new AuthenticationController)->generateToken()]);
+		$this->set('user', $u);
+		$u->token = (new AuthenticationController)->generateToken();
+		$result = $userTable->saveOrFail($u);
+		// return $userTable;
+		// $query = $this->Users->query();
+		// $result = $query->update()
+		// 	->set(['token' => (new AuthenticationController)->generateToken()])
+		// 	->where(['id' => $decrypted])
+		// 	->execute(); //this does not trigger onsave
+		// $user = $table->get($decrypted);
+
+		// $user->setId($decrypted);
+		$aftersave = $this->Users->get($decrypted);
+		$this->set('after', $aftersave->token);
+		$this->set('result', $result);
 		// $result = $table->save($user);
 
 		// if($result != false) {

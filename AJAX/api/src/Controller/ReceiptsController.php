@@ -48,13 +48,20 @@ class ReceiptsController extends ApiController {
 	}
 
 	public function get($id) {
-		$query = $this->Receipts->find('all')
-			->where(['Receipts.ID =' => (new EncryptionController)->decrypt($id)])
-			->contain(['Items'])
-			->limit(1);
+		$decrypted = (new EncryptionController)->decrypt($id);
+		if($decrypted != false) {
+			$query = $this->Receipts->find('all')
+				->where(['Receipts.ID =' => $decrypted])
+				->contain(['Items'])
+				->limit(1);
 
-		$data = $query->all()->toArray();
-		$this->set('result', $this->encodeReceipt($data[0]));
+			$data = $query->all()->toArray();
+			$this->set('result', $this->encodeReceipt($data[0]));
+		} else {
+			$this->set('result', []);
+		}
+		$this->set('code',200);
+
 	}
 	public function getYears() {
 		$query = $this->Receipts->find()
@@ -68,12 +75,15 @@ class ReceiptsController extends ApiController {
 
 	public function edit($id) {
 		$safeid = (new EncryptionController)->decrypt($id);
-		if(is_bool($safeid) == true) {
+		if($safeid != false) {
+			$receivedReceipt = json_decode($this->request->getData('receipt'));
+			$this->saveToReceipts($receivedReceipt);
 			$this->set('code',200);
-			return;
+
+		} else {
+			$this->set('code',400);
 		}
-		$receivedReceipt = json_decode($this->request->getData('receipt'));
-		$this->saveToReceipts($receivedReceipt);
+
 
 	}
 	private function encodeReceipt($receipt) {

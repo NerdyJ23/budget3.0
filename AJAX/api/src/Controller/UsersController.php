@@ -19,10 +19,10 @@ class UsersController extends ApiController {
 
 	}
 
-	public function login($username) {
+	public function login() {
 		$pass = $this->request->getData('password');
+		$username = $this->request->getData('username');
 		$validUser = (new AuthenticationController)->validUser('admin',$pass);
-		$this->set('valid',$validUser);
 
 		if($validUser == true) {
 			$query = $this->Users->find('all')
@@ -30,7 +30,7 @@ class UsersController extends ApiController {
 				->limit(1);
 			$data = $query->all()->toArray();
 
-			$this->set('after3', $this->_loginAuth($data[0]));
+			$this->_loginAuth($data[0]);
 		} else {
 			$this->set('code',403);
 		}
@@ -38,23 +38,22 @@ class UsersController extends ApiController {
 
 	private function _loginAuth($user) {
 		$decrypted = intval((new EncryptionController)->decrypt($user->encryptedId));
-		$this->set('decrypted',$decrypted);
-		$this->set('before', $user->token);
 
 		$userTable = $this->getTableLocator()->get('Users');
 		$u = $userTable->get($user->id);
 		$userTable->patchEntity($u, ['token' => (new AuthenticationController)->generateToken()]);
-		$this->set('user', $u);
+
 		$u->token = (new AuthenticationController)->generateToken();
 		$u->token_valid_until = $u->setTokenTimeLimit(7);
 		$result = $userTable->saveOrFail($u);
 
 		$aftersave = $this->Users->get($decrypted);
-		$this->set('after', $aftersave->token);
-		$this->set('result', $result);
+		// $this->set('token', $aftersave->token);
 
 		if($result != false) {
 			$this->set('code',200);
+			$response = $this->response;
+			$response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
 		} else {
 			$this->set('code',400);
 		}

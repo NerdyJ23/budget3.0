@@ -3,15 +3,18 @@
 use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 
+use App\Middleware\AuthenticationMiddleware;
+
 return static function (RouteBuilder $routes) {
 
     $routes->setRouteClass(DashedRoute::class);
-
+	$routes->registerMiddleware('auth', new AuthenticationMiddleware());
     $routes->scope('/', function (RouteBuilder $builder) {
 
         $builder->connect('/', 'Api::index');
 
 		$builder->scope('/receipt', function (RouteBuilder $builder) {
+			$builder->applyMiddleware('auth');
 			$builder->connect('/', 'Receipts::list');
 			$builder->patch('/{id}', 'Receipts::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Receipts::get')->setPass(['id']);
@@ -19,11 +22,12 @@ return static function (RouteBuilder $routes) {
 		$builder->connect('/login', 'Users::login'); //change to mixed field later?
 
 		$builder->scope('/user', function (RouteBuilder $builder) {
+			$builder->applyMiddleware('auth');
 			$builder->connect('/', 'Users::list');
 			$builder->patch('/{id}', 'Users::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Users::get')->setPass(['id']);
 		});
-		$builder->connect('/{controller}', ['action' => 'list']);
+		// $builder->connect('/{controller}', ['action' => 'list']);
 
         // $builder->connect('/pages/*', 'Pages::display');
 

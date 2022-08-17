@@ -60,7 +60,7 @@ class ReceiptsController extends ApiController {
 		} else {
 			$this->set('result', []);
 		}
-		$this->set('code',200);
+		$this->response = $this->response->withStatus(200);
 
 	}
 	public function getYears() {
@@ -78,10 +78,10 @@ class ReceiptsController extends ApiController {
 		if($safeid != false) {
 			$receivedReceipt = json_decode($this->request->getData('receipt'));
 			$this->saveToReceipts($receivedReceipt);
-			$this->set('code',200);
+			$this->response = $this->response->withStatus(200);
 
 		} else {
-			$this->set('code',400);
+			$this->response = $this->response->withStatus(400);
 		}
 
 
@@ -89,7 +89,7 @@ class ReceiptsController extends ApiController {
 	private function encodeReceipt($receipt) {
 		return [
 			'id' => $receipt->get('encodedId'),
-			'userid' => $receipt->get('userId'),
+			// 'userid' => $receipt->get('userId'),
 			'name' => $receipt->Location,
 			'cost' => $receipt->Cost,
 			'date' => $receipt->Date,
@@ -121,9 +121,9 @@ class ReceiptsController extends ApiController {
 		$result = $table->save($receipt);
 
 		if($result != false) {
-			$this->set('code',200);
+			$this->response = $this->response->withStatus(200);
 		} else {
-			$this->set('code',400);
+			$this->response = $this->response->withStatus(400);
 		}
 	}
 }

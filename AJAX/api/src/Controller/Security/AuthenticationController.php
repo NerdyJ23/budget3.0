@@ -14,7 +14,18 @@ class AuthenticationController extends Controller {
 	}
 
 	public function validToken($token): bool {
+		$userDB = new UsersController();
+		$query = $userDB->Users->find('all')
+			->where(['Users.token = ' => $token])
+			->limit(1);
 
+		$data = $query->all()->toArray();
+
+		if(sizeOf($data) != 0 ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public function validUser($username, $password) {

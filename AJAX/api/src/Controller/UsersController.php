@@ -32,7 +32,7 @@ class UsersController extends ApiController {
 
 			$this->_loginAuth($data[0]);
 		} else {
-			$this->set('code',403);
+			$this->response = $this->response->withStatus(403);
 		}
 	}
 
@@ -48,14 +48,13 @@ class UsersController extends ApiController {
 		$result = $userTable->saveOrFail($u);
 
 		$aftersave = $this->Users->get($decrypted);
-		// $this->set('token', $aftersave->token);
 
 		if($result != false) {
-			$this->set('code',200);
+			$this->response = $this->response->withStatus(200);
 			$response = $this->response;
 			$response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
 		} else {
-			$this->set('code',400);
+			$this->response = $this->response->withStatus(400);
 		}
 	}
 

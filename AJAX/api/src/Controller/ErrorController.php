@@ -31,15 +31,11 @@ class ErrorController extends AppController
     }
 
 	public function defaultResponse() {
-		$this->set('code',404);
-		$this->set('statusmessage','Not Found');
-
-		$this->viewBuilder()->setOption('serialize', ['status','statusmessage']);
+		$this->response = $this->response->withStatus(404);
 	}
 
 	private function errorResponse(EventInterface $event) {
-		$this->set('code',500);
-		$this->set('statusmessage', 'Internal Server Error');
+		$this->response = $this->response->withStatus(500);
 		$this->set('body', $this->request->getParsedBody());
 		$this->set('request',$this->request);
 		$this->set('errormessage',$event);

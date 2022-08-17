@@ -10,7 +10,7 @@
 /AJAX/api/node_modules/
 /AJAX/api/yarn-*
 /AJAX/api/Icon
-
+/package-lock.json
 /AJAX/api/*.db
 /site/node_modules/
 /AJAX/composer.phar

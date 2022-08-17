@@ -20,7 +20,7 @@ class ApiController extends Controller {
 	}
 	protected function _returnJSON() {
 		$this->response = $this->response->cors($this->request)
-		->allowOrigin('*')
+		->allowOrigin('*.jessprogramming.com')
 		->build();
 		$this->viewBuilder()->setOption('serialize',true);
 	}

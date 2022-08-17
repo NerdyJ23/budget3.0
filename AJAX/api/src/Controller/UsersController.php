@@ -62,6 +62,7 @@ class UsersController extends ApiController {
 			));
 			// $response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
 			$this->response = $this->response->withStatus(200);
+			$this->response = $this->response->withHeader('Access-Control-Allow-Credentials', 'true');
 		} else {
 			$this->response = $this->response->withStatus(400);
 		}

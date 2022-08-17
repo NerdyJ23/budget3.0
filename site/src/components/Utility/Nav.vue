@@ -14,8 +14,9 @@
 </template>
 
 <script>
-
 import Login from '../Login/LoginDialog';
+import Cookies from 'js-cookie';
+
 export default {
 	props: {
 		page: {

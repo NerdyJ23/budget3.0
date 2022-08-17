@@ -73,6 +73,7 @@ export default {
 
 			fetch(`${this.$store.state.api}/login`, {
 				method: 'POST',
+				credentials: 'include',
 				body: (new URLSearchParams(formData))
 			}).then(response => {
 				console.log('response');

@@ -28,6 +28,7 @@ class AuthenticationMiddleware implements MiddlewareInterface {
 	private function _accessDenied():Response {
 		$response = new Response();
 		$response = $response->withStatus(403, 'Not Logged In');
+		$response = $response->withType('json');
 		$response = $response->withStringBody(json_encode(['statusmessage' => 'Login token not found or incorrect']));
 
 		return $response;

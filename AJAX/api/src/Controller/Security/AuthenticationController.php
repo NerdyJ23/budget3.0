@@ -2,8 +2,11 @@
 namespace App\Controller\Security;
 
 use Cake\Controller\Controller;
-use App\Controller\UsersController;
+use Cake\Http\Response;
+use Cake\Http\Cookie\Cookie;
+use DateTime;
 
+use App\Controller\UsersController;
 class AuthenticationController extends Controller {
 
 	public function initialize(): void {
@@ -40,6 +43,26 @@ class AuthenticationController extends Controller {
 			return true;
 		}
 		return false;
+	}
+
+	public function setCookie(Response $response, $options = [
+		'name' => 'testcookie',
+		'value' => 'cookieval',
+		'expiry' => new DateTime(' + 1 day'),
+		'path' => '/',
+		'domain' => 'test.com',
+		'secure' => true,
+		'httponly' => true
+		]): Response {
+
+		return $response->withCookie((new Cookie($options['name']))
+			->withValue($options['value'])
+			->withExpiry($options['expiry'])
+			->withPath($options['path'])
+			->withDomain($options['domain'])
+			->withSecure($options['secure'])
+			->withHttpOnly($options['httponly'])
+		);
 	}
 }
 ?>

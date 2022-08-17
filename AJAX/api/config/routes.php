@@ -19,7 +19,7 @@ return static function (RouteBuilder $routes) {
 			$builder->patch('/{id}', 'Receipts::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Receipts::get')->setPass(['id']);
 		});
-		$builder->connect('/login', 'Users::login'); //change to mixed field later?
+		$builder->connect('/login', 'Users::login');
 
 		$builder->scope('/user', function (RouteBuilder $builder) {
 			$builder->applyMiddleware('auth');

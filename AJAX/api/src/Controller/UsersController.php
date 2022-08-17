@@ -5,7 +5,8 @@ use Cake\Controller\Controller;
 use Cake\View\JsonView;
 use App\Controller\Security\EncryptionController;
 use App\Controller\Security\AuthenticationController;
-
+use Cake\Http\Cookie\Cookie;
+use DateTime;
 class UsersController extends ApiController {
 	public function initialize(): void {
 		parent::initialize();
@@ -50,9 +51,17 @@ class UsersController extends ApiController {
 		$aftersave = $this->Users->get($decrypted);
 
 		if($result != false) {
+			// $response = $this->response;
+			$this->response = $this->response->withCookie(Cookie::create(
+				'token',
+				$u->token,
+				[
+					'expires' => new DateTime('+ 7 days'),
+					'httpOnly' => false
+				]
+			));
+			// $response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
 			$this->response = $this->response->withStatus(200);
-			$response = $this->response;
-			$response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
 		} else {
 			$this->response = $this->response->withStatus(400);
 		}

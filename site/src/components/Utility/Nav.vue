@@ -51,6 +51,8 @@ export default {
 		},
 		logout() {
 			Cookies.remove('token', {path:'/'});
+			this.validSession = false;
+			window.location('/');
 		}
 	}
 }

@@ -8,6 +8,7 @@
 		<div v-if="validSession">
 			<v-btn to="/receipt" plain>My Receipts</v-btn>
 			<v-btn to="/graph" plain>Overview</v-btn>
+			<v-btn plain @click="logout">Logout</v-btn>
 		</div>
 		<div v-else>
 			<v-btn @click="showLogin" plain>Login</v-btn>
@@ -47,6 +48,9 @@ export default {
 		},
 		showLogin() {
 			this.$refs.login.show();
+		},
+		logout() {
+			Cookies.remove('token', {path:'/'});
 		}
 	}
 }

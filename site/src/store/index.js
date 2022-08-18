@@ -13,6 +13,8 @@ export default new Vuex.Store({
   },
   getters: {
 	checkValidSession() {
+		console.log(`cookie: ${Cookies.get('token')}`);
+		console.log(`all cookies: ${document.cookie}`);
 		if(typeof Cookies.get('token') === 'undefined') {
 			return false;
 		}

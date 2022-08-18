@@ -11,7 +11,7 @@
 			<v-btn plain @click="logout">Logout</v-btn>
 		</div>
 		<div v-else>
-			<v-btn @click="showLogin" @loggedin="validSession" plain>Login</v-btn>
+			<v-btn @click="showLogin" @loggedin="setValidSession" plain>Login</v-btn>
 		</div>
 	</v-toolbar>
 	<Login ref="login"></Login>
@@ -25,6 +25,7 @@ import Cookies from 'js-cookie';
 export default {
 	mounted() {
 		this.init();
+		this.validSession = this.setValidSession();
 	},
 	props: {
 		page: {
@@ -50,7 +51,7 @@ export default {
 			Cookies.remove('token', {path:'/'});
 			window.location = '/';
 		},
-		validSession() {
+		setValidSession() {
 			return this.$store.getters.checkValidSession;
 		}
 	}

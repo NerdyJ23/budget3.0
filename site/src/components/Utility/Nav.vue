@@ -11,7 +11,7 @@
 			<v-btn plain @click="logout">Logout</v-btn>
 		</div>
 		<div v-else>
-			<v-btn @click="showLogin" @loggedin="setValidSession" plain>Login</v-btn>
+			<v-btn @click="showLogin" @loggedin="validSession = setValidSession" plain>Login</v-btn>
 		</div>
 	</v-toolbar>
 	<Login ref="login"></Login>

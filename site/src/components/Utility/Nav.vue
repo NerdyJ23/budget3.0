@@ -22,6 +22,9 @@ import Login from '../Login/LoginDialog';
 import Cookies from 'js-cookie';
 
 export default {
+	mounted() {
+		this.init();
+	},
 	props: {
 		page: {
 			required: false,

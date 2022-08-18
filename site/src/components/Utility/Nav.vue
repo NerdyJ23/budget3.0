@@ -14,7 +14,7 @@
 			<v-btn @click="showLogin" plain>Login</v-btn>
 		</div>
 	</v-toolbar>
-	<Login ref="login" @loggedin="validSession = true"></Login>
+	<Login ref="login"></Login>
 </div>
 </template>
 
@@ -47,8 +47,7 @@ export default {
 		},
 		logout() {
 			Cookies.remove('token', {path:'/'});
-			this.validSession = false;
-			window.location('/');
+			window.location = '/';
 		}
 	},
 	computed: {

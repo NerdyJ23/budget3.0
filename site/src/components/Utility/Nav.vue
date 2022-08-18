@@ -52,6 +52,8 @@ export default {
 			window.location = '/';
 		},
 		setValidSession() {
+			// return true;
+			console.log(`valid session? : ${this.$store.getters.checkValidSession}`);
 			return this.$store.getters.checkValidSession;
 		}
 	}

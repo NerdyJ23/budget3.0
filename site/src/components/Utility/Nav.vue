@@ -11,7 +11,7 @@
 			<v-btn plain @click="logout">Logout</v-btn>
 		</div>
 		<div v-else>
-			<v-btn @click="showLogin" plain>Login</v-btn>
+			<v-btn @click="showLogin" @loggedin="validSession" plain>Login</v-btn>
 		</div>
 	</v-toolbar>
 	<Login ref="login"></Login>
@@ -34,6 +34,7 @@ export default {
 	},
 	data: function () {
 		return {
+			validSession: false
 		}
 	},
 	components: {
@@ -48,9 +49,7 @@ export default {
 		logout() {
 			Cookies.remove('token', {path:'/'});
 			window.location = '/';
-		}
-	},
-	computed: {
+		},
 		validSession() {
 			return this.$store.getters.checkValidSession;
 		}

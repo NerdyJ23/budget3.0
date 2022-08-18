@@ -13,9 +13,6 @@ export default new Vuex.Store({
   getters: {
   },
   mutations: {
-	setToken(state, x) {
-		state.csrfToken = x;
-	}
   },
   actions: {
   },

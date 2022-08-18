@@ -5,11 +5,15 @@
 			<v-btn to="/" plain>Home</v-btn>
 		</v-toolbar-title>
 		<v-spacer></v-spacer>
-		<v-btn to="/receipt" plain>My Receipts</v-btn>
-		<v-btn to="/graph" plain>Overview</v-btn>
-		<v-btn @click="showLogin" plain>Login</v-btn>
+		<div v-if="validSession">
+			<v-btn to="/receipt" plain>My Receipts</v-btn>
+			<v-btn to="/graph" plain>Overview</v-btn>
+		</div>
+		<div v-else>
+			<v-btn @click="showLogin" plain>Login</v-btn>
+		</div>
 	</v-toolbar>
-	<Login ref="login"></Login>
+	<Login ref="login" @loggedin="validSession = true"></Login>
 </div>
 </template>
 
@@ -26,13 +30,18 @@ export default {
 	},
 	data: function () {
 		return {
-			loginVisible: true
+			validSession: false
 		}
 	},
 	components: {
 		Login
 	},
 	methods: {
+		init() {
+			if(Cookies.get('token') !== 'undefined') {
+				this.validSession = true;
+			}
+		},
 		showLogin() {
 			this.$refs.login.show();
 		}

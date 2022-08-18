@@ -11,10 +11,10 @@
 			<v-btn plain @click="logout">Logout</v-btn>
 		</div>
 		<div v-else>
-			<v-btn @click="showLogin" @loggedin="validSession = setValidSession" plain>Login</v-btn>
+			<v-btn @click="showLogin" plain>Login</v-btn>
 		</div>
 	</v-toolbar>
-	<Login ref="login"></Login>
+	<Login ref="login" @loggedin="validSession = setValidSession"></Login>
 </div>
 </template>
 
@@ -52,8 +52,7 @@ export default {
 			window.location = '/';
 		},
 		setValidSession() {
-			// return true;
-			console.log(`valid session? : ${this.$store.getters.checkValidSession}`);
+			// console.log(`valid session? : ${this.$store.getters.checkValidSession}`);
 			return this.$store.getters.checkValidSession;
 		}
 	}

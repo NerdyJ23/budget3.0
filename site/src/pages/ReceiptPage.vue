@@ -46,6 +46,7 @@ export default {
 		loadItems() {
 			fetch(`${this.apiUrl}/receipt/${this.$route.params.receiptid}`, {
 				method: 'GET',
+				credentials: 'include'
 			}).then(response => {
 				if (response.status === 200) {
 					return response.json();

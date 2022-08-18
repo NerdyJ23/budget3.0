@@ -25,6 +25,7 @@ export default {
 		getSession() {
 			fetch(`${this.apiUrl}/receipt?month=5&year=2021`, {
 				method: 'GET',
+				credentials: 'include'
 			}).then(response => {
 				if (response.status === 200) {
 					return response.json();

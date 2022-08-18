@@ -94,7 +94,8 @@ export default {
 			console.log(`${this.$store.state.api}/receipt/${this.receipt.id}`);
 			fetch(`${this.$store.state.api}/receipt/${this.receipt.id}`, {
 				method: 'PATCH',
-				body: (new URLSearchParams(formData))
+				body: (new URLSearchParams(formData)),
+				credentials: 'include'
 			}).then(response => {
 				if (response.status === 200) {
 					return response.json();

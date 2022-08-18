@@ -137,6 +137,7 @@ export default {
 			console.log('loading');
 			fetch(`${this.apiUrl}/receipt?month=${selectedMonth}&year=${this.selectedYear}`, {
 				method: 'GET',
+				credentials: 'include'
 			}).then(response => {
 				if (response.status === 200) {
 					return response.json();

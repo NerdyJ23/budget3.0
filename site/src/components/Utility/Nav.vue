@@ -42,7 +42,7 @@ export default {
 	},
 	methods: {
 		init() {
-			if(Cookies.get('token') !== 'undefined') {
+			if(typeof Cookies.get('token') !== 'undefined') {
 				this.validSession = true;
 			}
 		},

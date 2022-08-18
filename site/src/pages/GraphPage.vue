@@ -1,16 +1,19 @@
 <template>
-<div>
-	<Graph v-if="loaded" :dataPoints=dataPoints></Graph>
-</div>
+	<div v-if="validSession">
+		<Graph v-if="loaded" :dataPoints=dataPoints></Graph>
+	</div>
+	<AccessDeniedPage v-else></AccessDeniedPage>
 </template>
 
 <script>
 import Graph from '../components/Graph/Graph.vue';
+import AccessDeniedPage from './ErrorPages/AccessDeniedPage.vue';
 
 export default {
 	components: {
-		Graph
-  	},
+    Graph,
+    AccessDeniedPage
+},
 	mounted() {
 		this.getSession();
 	},
@@ -40,6 +43,11 @@ export default {
 				console.error(err);
 				this.loaded = true;
 			})
+		}
+	},
+	computed: {
+		validSession() {
+			return this.$store.getters.checkValidSession;
 		}
 	}
 

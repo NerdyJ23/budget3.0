@@ -34,7 +34,6 @@ export default {
 	},
 	data: function () {
 		return {
-			validSession: false
 		}
 	},
 	components: {
@@ -42,9 +41,6 @@ export default {
 	},
 	methods: {
 		init() {
-			if(typeof Cookies.get('token') !== 'undefined') {
-				this.validSession = true;
-			}
 		},
 		showLogin() {
 			this.$refs.login.show();
@@ -53,6 +49,11 @@ export default {
 			Cookies.remove('token', {path:'/'});
 			this.validSession = false;
 			window.location('/');
+		}
+	},
+	computed: {
+		validSession() {
+			return this.$store.getters.checkValidSession;
 		}
 	}
 }

@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 import App from './App.vue'
 
 import Home from './pages/Home';
-import NotFoundPage from './pages/NotFoundPage';
+import NotFoundPage from './pages/ErrorPages/NotFoundPage';
 import GraphPage from './pages/GraphPage';
 import ReceiptListPage from './pages/ReceiptListPage';
 import ReceiptPage from './pages/ReceiptPage';
@@ -19,7 +19,7 @@ const routes = [
 	{path: '/', component: Home},
 	{path: '/graph', component: GraphPage},
 	{path: '/receipt', component: ReceiptListPage},
-	{path: '/receipt/:receiptid', component: ReceiptPage},
+	// {path: '/receipt/:receiptid', component: ReceiptPage},
 
 	{path: '*', component: NotFoundPage},
 ];

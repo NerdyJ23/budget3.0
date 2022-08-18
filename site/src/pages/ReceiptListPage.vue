@@ -1,5 +1,5 @@
 <template>
-<div>
+<div v-if="validSession">
 <v-card class="px-4">
 	<v-card-title>
 		<v-row>
@@ -82,16 +82,20 @@
 </v-card>
 <ReceiptDialog ref="receiptDialog"></ReceiptDialog>
 </div>
+<AccessDeniedPage v-else></AccessDeniedPage>
 </template>
 
 <script>
 import Receipt from '../components/Receipt';
 import ReceiptDialog from '../components/Receipt/ReceiptDialog';
+import AccessDeniedPage from './ErrorPages/AccessDeniedPage.vue';
+
 export default {
 	components: {
-		Receipt,
-		ReceiptDialog
-	},
+    Receipt,
+    ReceiptDialog,
+    AccessDeniedPage
+},
 	mounted() {
 		this.init();
 		this.loadReceipts();
@@ -213,6 +217,11 @@ export default {
 			if(this.loaded) {
 				this.loadReceipts();
 			}
+		}
+	},
+	computed: {
+		validSession() {
+			return this.$store.getters.checkValidSession;
 		}
 	}
 }

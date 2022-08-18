@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -11,6 +12,12 @@ export default new Vuex.Store({
 	weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
   },
   getters: {
+	checkValidSession() {
+		if(typeof Cookies.get('token') === 'undefined') {
+			return false;
+		}
+		return true;
+	}
   },
   mutations: {
   },

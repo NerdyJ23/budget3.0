@@ -14,7 +14,7 @@
 			<v-btn @click="showLogin" plain>Login</v-btn>
 		</div>
 	</v-toolbar>
-	<Login ref="login" @loggedin="validSession = setValidSession"></Login>
+	<Login ref="login" @loggedin="setValidSession"></Login>
 </div>
 </template>
 
@@ -25,7 +25,6 @@ import Cookies from 'js-cookie';
 export default {
 	mounted() {
 		this.init();
-		this.validSession = this.setValidSession();
 	},
 	props: {
 		page: {
@@ -43,6 +42,7 @@ export default {
 	},
 	methods: {
 		init() {
+			this.validSession = this.$store.state.validSession;
 		},
 		showLogin() {
 			this.$refs.login.show();
@@ -53,7 +53,8 @@ export default {
 		},
 		setValidSession() {
 			// console.log(`valid session? : ${this.$store.getters.checkValidSession}`);
-			return this.$store.getters.checkValidSession;
+			this.$store.state.validSession = true;
+			this.init();
 		}
 	}
 }

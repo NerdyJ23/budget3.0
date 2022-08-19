@@ -1,5 +1,5 @@
 <template>
-<div v-if="validSession">
+<div v-if="$store.state.validSession">
 <v-card class="px-4">
 	<v-card-title>
 		<v-row>

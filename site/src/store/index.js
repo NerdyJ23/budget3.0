@@ -10,6 +10,7 @@ export default new Vuex.Store({
 	site: 'https://budget.jessprogramming.com',
 	months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
 	weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+	validSession: false,
   },
   getters: {
 	checkValidSession() {

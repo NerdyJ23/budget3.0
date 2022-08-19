@@ -1,5 +1,5 @@
 <template>
-	<div v-if="validSession">
+	<div v-if="$store.state.validSession">
 		<Graph v-if="loaded" :dataPoints=dataPoints></Graph>
 	</div>
 	<AccessDeniedPage v-else></AccessDeniedPage>

@@ -22,6 +22,7 @@ class ApiController extends Controller {
 		$this->response = $this->response->cors($this->request)
 		->allowOrigin('*.jessprogramming.com')
 		->build();
+		$this->response = $this->response->withHeader('Access-Control-Allow-Credentials', 'true');
 		$this->viewBuilder()->setOption('serialize',true);
 	}
 	protected function _isPushingData() {

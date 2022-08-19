@@ -5,7 +5,7 @@
 		max-width="75vw"
     >
         <v-card>
-            <v-card-title>{{options.mode}} Receipt</v-card-title>
+            <v-card-title class="text-center justify-space-around receipt">{{options.mode}} Receipt</v-card-title>
 
             <v-card-text>
 				<v-form>
@@ -54,6 +54,12 @@ export default {
 	mounted() {
 		this.init();
 	},
+	props: {
+		dialogMode: {
+			type: String,
+			required: false
+		},
+	},
     data: function () {
         return {
 			visible:false,
@@ -64,7 +70,8 @@ export default {
 			receipt: {
 				name: '',
 				date: null,
-				id: 0
+				id: 0,
+				items: []
 			},
 			receiptRef: {},
 			options: {
@@ -74,11 +81,13 @@ export default {
     },
 	methods: {
 		init() {
-			// if(typeof this.r !== 'undefined') {
-			// 	this.receipt = {...r};
-			// } else {
-			// 	this.options.mode = this.defaults.modes[0];
-			// }
+			this.options.mode = this.defaults.mode[0];
+
+			if(typeof this.dialogMode === 'undefined') {
+				if(this.defaults.modes.indexOf(this.dialogMode) !== -1 ) {
+					this.options.mode = this.dialogMode;
+				}
+			}
 		},
 		show() {
 			this.visible = true;
@@ -112,3 +121,9 @@ export default {
 	}
 }
 </script>
+
+<style scoped>
+.receipt {
+	font-size: 3em !important;
+}
+</style>

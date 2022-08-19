@@ -40,6 +40,9 @@
 			<template v-slot:item.cost="{item}">
 				${{item.cost.toFixed(2)}}
 			</template>
+			<template v-slot:item.name="{item}">
+				<span class="receipt-item">{{item.name}}</span>
+			</template>
 			<template v-slot:item.actions="{item}">
 			<div class="justify-end">
 				<v-btn icon @click.stop="editReceipt(item)"><v-icon color="blue lighten-2">mdi-pencil</v-icon></v-btn>

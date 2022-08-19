@@ -5,6 +5,7 @@
 /AJAX/api/tmp/
 /AJAX/api/vendor/
 
+/*/package-lock.json
 /node_modules/*
 /AJAX/api/.*
 /AJAX/api/node_modules/

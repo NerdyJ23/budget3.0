@@ -1,14 +1,22 @@
 <template>
-	<v-row class="d-flex text-center">
+	<v-row class="d-flex text-center justify-space-around">
 		<span
-		class="text-h5 white--text red flex-grow-1"
+		class="text-body-1 white--text red rounded-lg pa-2"
 		v-if="status === defaults.status[2]"
-		>{{statusText}}</span>
+		>
+			<v-icon color="white">mdi-close-circle</v-icon>
+			<v-spacer></v-spacer>
+			<span class="align-end">{{statusText}}</span>
+		</span>
 
 		<span
-		class="text-h5 white--text green flex-grow-1"
+		class="text-body-1 white--text green rounded-lg pa-2"
 		v-else-if="status === defaults.status[1]"
-		>{{statusText}}</span>
+		>
+			<v-icon color="white">mdi-check-circle</v-icon>
+			<v-spacer></v-spacer>
+			<span class="align-end">{{statusText}}</span>
+		</span>
 	</v-row>
 </template>
 <script>

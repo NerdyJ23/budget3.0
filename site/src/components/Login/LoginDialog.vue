@@ -91,7 +91,7 @@ export default {
 			}).then(response => {
 				if (response.status === 200) {
 					this.$refs.status.setStatus('Success');
-					this.$refs.status.setStatusMessage('Login success');
+					this.$refs.status.setStatusMessage('Success! Redirecting...');
 					setTimeout(() => {this.options.visible = false},1000);
 					this.isLoading(false);
 					this.$emit('loggedin');

@@ -8,8 +8,13 @@
 
 			<v-form ref="login" class="mx-4" @submit.prevent="login" :disabled="options.disabled">
 				<v-card-text>
+					<v-overlay
+						v-if="options.loading"
+						:absolute="options.absoluteOverlay"
+					>
+						<v-progress-circular indeterminate size="50"></v-progress-circular>
+					</v-overlay>
 					<StatusBanner ref="status"></StatusBanner>
-					<v-progress-linear indeterminate v-if="options.loading"></v-progress-linear>
 					<v-row>
 						<v-text-field
 						label="username"
@@ -35,6 +40,8 @@
 				</v-card-actions>
 			</v-form>
 		</v-card>
+
+
 	</v-dialog>
 </template>
 
@@ -56,7 +63,8 @@ export default {
 				visible: false,
 				loading: false,
 				mode: '',
-				disabled: false
+				disabled: false,
+				absoluteOverlay: true,
 			}
 		}
 	},
@@ -72,7 +80,7 @@ export default {
 		show() {
 			this.init();
 			this.options.visible = true;
-			this.$refs.status.init();
+			setTimeout(() => {this.$refs.status.init()}, 1000);
 		},
 		hide() {
 			this.options.visible = false;
@@ -83,36 +91,41 @@ export default {
 			let formData = new FormData();
 			formData.append('username', this.username);
 			formData.append('password', this.password);
-
-			fetch(`${this.$store.state.api}/login`, {
-				method: 'POST',
-				credentials: 'include',
-				body: (new URLSearchParams(formData))
-			}).then(response => {
-				if (response.status === 200) {
-					this.$refs.status.setStatus('Success');
-					this.$refs.status.setStatusMessage('Success! Redirecting...');
-					setTimeout(() => {this.options.visible = false},1000);
-					this.isLoading(false);
-					this.$emit('loggedin');
-				} else {
-					this.isLoading(false);
-					throw response;
-				}
-			}).catch((error) => {
-				console.error(`${error.status}: ${error.statusText}`);
+			try {
+				fetch(`${this.$store.state.api}/login`, {
+					method: 'POST',
+					credentials: 'include',
+					body: (new URLSearchParams(formData))
+				}).then(response => {
+					if (response.status === 200) {
+						this.$refs.status.setStatus('Success');
+						this.$refs.status.setStatusMessage('Success! Redirecting...');
+						setTimeout(() => {
+							this.options.visible = false
+							this.isLoading(false);
+							},1000);
+						this.$emit('loggedin');
+					} else {
+						this.isLoading(false);
+						throw response;
+					}
+				}).catch((error) => {
+					console.error(`${error.status}: ${error.statusText}`);
+					this.$refs.status.setStatus('Fail');
+					this.$refs.status.setStatusMessage(error.statusText);
+					this.password = '';
+				})
+			} catch(e) {
+				this.isLoading(false);
 				this.$refs.status.setStatus('Fail');
-				this.$refs.status.setStatusMessage(error.statusText);
-			})
-		},
-		isLoading(value = true) {
-			if(value) {
-				this.$refs.status.init();
-				this.options.disabled = true;
-				this.loading = true;
-			} else if(!value) {
-				this.options.disabled = false;
+				this.$refs.status.setStatusMessage('Unknown Error Occured');
+				this.password = '';
 			}
+		},
+		isLoading(value) {
+			this.$refs.status.init();
+			this.options.disabled = value;
+			this.loading = value;
 		}
 	}
 }

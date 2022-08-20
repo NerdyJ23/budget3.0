@@ -1,57 +1,21 @@
 <template>
-<div>
+<div v-if="visible">
     <v-dialog
 		v-model="visible"
 		max-width="75vw"
     >
-        <v-card>
-            <v-card-title class="text-center justify-space-around receipt">{{options.mode}} Receipt</v-card-title>
-
-            <v-card-text>
-				<v-form>
-					<v-row>
-						<v-col cols="8">
-							<v-text-field
-								v-model="receipt.name"
-							></v-text-field>
-						</v-col>
-						<v-col cols="4">
-							<v-text-field
-							v-model="receipt.date"
-							prepend-icon="mdi-calendar"
-							@click="datePick = true"
-							readonly
-							></v-text-field>
-						</v-col>
-					</v-row>
-				</v-form>
-            </v-card-text>
-			<v-card-actions>
-				<v-btn @click="save">Save</v-btn>
-				<v-btn color="red" @click="hide">Cancel</v-btn>
-			</v-card-actions>
-        </v-card>
+		<EditReceipt v-if="options.mode === defaults.mode[1]" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
+		<ViewReceipt v-if="options.mode === defaults.mode[0]" :receipt="receipt" @close="hide"></ViewReceipt>
     </v-dialog>
-	<v-dialog v-model="datePick" width="50vw">
-		<v-date-picker v-model="receipt.date" full-width>
-			<template v-slot="{item}">
-				<v-row>
-					<v-col cols="12" class="d-flex align-end">
-						<v-spacer></v-spacer>
-						<v-btn class="px-2 mx-2" @click.stop="datePick = false">Save</v-btn>
-					</v-col>
-				</v-row>
 
-			</template>
-
-		</v-date-picker>
-	</v-dialog>
 </div>
 </template>
 
 <script>
+import EditReceipt from './EditReceipt';
+import ViewReceipt from './ViewReceipt';
 export default {
-	mounted() {
+	beforeMount() {
 		this.init();
 	},
 	props: {
@@ -63,9 +27,8 @@ export default {
     data: function () {
         return {
 			visible:false,
-			datePick: false,
 			defaults: {
-				modes: ['Add','Edit'],
+				mode: ['View','Edit'],
 			},
 			receipt: {
 				name: '',
@@ -73,28 +36,41 @@ export default {
 				id: 0,
 				items: []
 			},
-			receiptRef: {},
 			options: {
 				mode: ''
 			}
         }
     },
+	components: {
+		EditReceipt,
+		ViewReceipt,
+	},
+	provide: function () {
+		return {
+			getReceipt: this.getReceipt
+		}
+	},
 	methods: {
 		init() {
 			this.options.mode = this.defaults.mode[0];
-
+			console.log(`mode: ${this.options.mode}`);
 			if(typeof this.dialogMode === 'undefined') {
-				if(this.defaults.modes.indexOf(this.dialogMode) !== -1 ) {
+				if(this.defaults.mode.indexOf(this.dialogMode) !== -1 ) {
 					this.options.mode = this.dialogMode;
 				}
 			}
 		},
 		show() {
+			// this.$refs.editReceipt.receipt = this.receipt;
 			this.visible = true;
 		},
+
 		hide() {
 			this.visible = false;
 			this.init();
+		},
+		getReceipt() {
+			return this.receipt;
 		},
 		save() {
 			//ping to place

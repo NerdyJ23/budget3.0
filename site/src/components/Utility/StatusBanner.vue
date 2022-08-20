@@ -1,23 +1,14 @@
 <template>
-	<v-row class="d-flex text-center justify-space-around">
-		<span
-		class="text-body-1 white--text red rounded-lg pa-2"
-		v-if="status === defaults.status[2]"
-		>
-			<v-icon color="white">mdi-close-circle</v-icon>
-			<v-spacer></v-spacer>
-			<span class="align-end">{{statusText}}</span>
-		</span>
-
-		<span
-		class="text-body-1 white--text green rounded-lg pa-2"
-		v-else-if="status === defaults.status[1]"
-		>
-			<v-icon color="white">mdi-check-circle</v-icon>
-			<v-spacer></v-spacer>
-			<span class="align-end">{{statusText}}</span>
-		</span>
-	</v-row>
+	<v-snackbar
+	class="text-body-1 white--text rounded-lg pa-2"
+	:color="isFail ? 'red' : 'green'"
+	v-model="showBanner"
+	:timeout="2000"
+	>
+		<v-icon v-if="isFail" color="white">mdi-close-circle</v-icon> &nbsp;
+		<v-icon v-if="isSuccess" color="white">mdi-check-circle</v-icon> &nbsp;
+		<span class="align-end">{{statusText}}</span>
+	</v-snackbar>
 </template>
 <script>
 export default {
@@ -84,6 +75,17 @@ export default {
 		},
 		setStatusMessage(text) {
 			this.statusText = text;
+		}
+	},
+	computed: {
+		isFail() {
+			return this.status === this.defaults.status[2];
+		},
+		isSuccess() {
+			return this.status === this.defaults.status[1];
+		},
+		showBanner() {
+			return this.isFail || this.isSuccess;
 		}
 	}
 }

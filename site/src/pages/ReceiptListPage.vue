@@ -201,13 +201,14 @@ export default {
 			return `${date}${dateExt} ${this.$store.state.months[tempDate.getMonth()]}`;
 		},
 		editReceipt(receipt) {
-			this.$refs.receiptDialog.show();
 			this.$refs.receiptDialog.receipt = {
 				id: receipt.id,
 				name: receipt.name,
 				date: receipt.date
 			};
-			// console.log(receipt);
+			console.log('ref receipt is');
+			console.log(this.$refs.receiptDialog.receipt);
+			this.$refs.receiptDialog.show();
 		}
 	},
 	watch: {

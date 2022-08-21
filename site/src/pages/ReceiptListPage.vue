@@ -19,11 +19,14 @@
 				label="Year"
 				></v-select>
 			</v-col>
-			<v-col cols="10">
+			<v-col cols="9">
 				<v-text-field
 				v-model="search"
 				append-icon="mdi-magnify"
 				></v-text-field>
+			</v-col>
+			<v-col cols="1" class="d-flex align-center">
+				<v-btn outlined color="green lighten-1" @click="addReceipt">Add</v-btn>
 			</v-col>
 		</v-row>
 	</v-card-title>
@@ -201,6 +204,8 @@ export default {
 			return `${date}${dateExt} ${this.$store.state.months[tempDate.getMonth()]}`;
 		},
 		editReceipt(receipt) {
+			this.$refs.receiptDialog.setMode('Edit');
+			this.$refs.receiptDialog.show();
 			this.$refs.receiptDialog.receipt = {
 				id: receipt.id,
 				name: receipt.name,
@@ -208,6 +213,9 @@ export default {
 			};
 			console.log('ref receipt is');
 			console.log(this.$refs.receiptDialog.receipt);
+		},
+		addReceipt() {
+			this.$refs.receiptDialog.setMode('Add');
 			this.$refs.receiptDialog.show();
 		}
 	},

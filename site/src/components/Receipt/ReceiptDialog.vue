@@ -4,7 +4,7 @@
 		v-model="visible"
 		max-width="75vw"
     >
-		<EditReceipt v-if="options.mode === defaults.mode[1]" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
+		<EditReceipt v-if="options.mode === defaults.mode[1] || options.mode === defaults.mode[2]" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
 		<ViewReceipt v-if="options.mode === defaults.mode[0]" :receipt="receipt" @close="hide"></ViewReceipt>
     </v-dialog>
 
@@ -14,21 +14,22 @@
 <script>
 import EditReceipt from './EditReceipt';
 import ViewReceipt from './ViewReceipt';
+
 export default {
 	beforeMount() {
 		this.init();
-	},
-	props: {
-		dialogMode: {
-			type: String,
-			required: false
-		},
 	},
     data: function () {
         return {
 			visible:false,
 			defaults: {
-				mode: ['View','Edit'],
+				mode: ['View', 'Edit', 'Add'],
+				receipt: {
+					name: '',
+					date: null,
+					id: 0,
+					items: []
+				}
 			},
 			receipt: {
 				name: '',
@@ -52,16 +53,14 @@ export default {
 	},
 	methods: {
 		init() {
-			this.options.mode = this.defaults.mode[0];
-			console.log(`mode: ${this.options.mode}`);
-			if(typeof this.dialogMode === 'undefined') {
-				if(this.defaults.mode.indexOf(this.dialogMode) !== -1 ) {
-					this.options.mode = this.dialogMode;
-				}
+			if(this.options.mode === '') {
+				this.options.mode = this.defaults.mode[0];
 			}
+			console.log(`mode: ${this.options.mode}`);
 		},
 		show() {
 			// this.$refs.editReceipt.receipt = this.receipt;
+			this.receipt = this.defaults.receipt;
 			this.visible = true;
 		},
 
@@ -72,26 +71,42 @@ export default {
 		getReceipt() {
 			return this.receipt;
 		},
-		save() {
-			//ping to place
-			let formData = new FormData();
-			formData.append('receipt', JSON.stringify(this.receipt));
-			console.log(`${this.$store.state.api}/receipt/${this.receipt.id}`);
-			fetch(`${this.$store.state.api}/receipt/${this.receipt.id}`, {
-				method: 'PATCH',
-				body: (new URLSearchParams(formData)),
-				credentials: 'include'
-			}).then(response => {
-				if (response.status === 200) {
-					return response.json();
-				} else {
-					throw new Error();
+		setMode(mode) {
+			if(this.validMode(mode)) {
+				this.options.mode = mode;
+			}
+		},
+		validMode(mode) {
+			if(typeof mode !== 'undefined') {
+				if(this.defaults.mode.indexOf(mode) !== -1) {
+					return true;
 				}
-			}).then(data => {
-				console.log(data);
-			}).catch(err => {
-				console.error(err);
-			})
+			}
+			return false;
+		},
+		save() {
+			if(this.options.mode === this.defaults.mode[2]) { //Add
+
+			} else if(this.options.mode === this.defaults.mode[1]) { //Edit
+				let formData = new FormData();
+				formData.append('receipt', JSON.stringify(this.receipt));
+				console.log(`${this.$store.state.api}/receipt/${this.receipt.id}`);
+				fetch(`${this.$store.state.api}/receipt/${this.receipt.id}`, {
+					method: 'PATCH',
+					body: (new URLSearchParams(formData)),
+					credentials: 'include'
+				}).then(response => {
+					if (response.status === 200) {
+						return response.json();
+					} else {
+						throw new Error();
+					}
+				}).then(data => {
+					console.log(data);
+				}).catch(err => {
+					console.error(err);
+				})
+			}
 			this.hide();
 		}
 	}

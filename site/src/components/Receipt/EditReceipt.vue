@@ -1,6 +1,6 @@
 <template>
 	<div v-if="visible">
-		<v-card>
+		<v-card class="pa-4">
 			<v-card-title class="text-center justify-space-around receipt">{{mode}} Receipt</v-card-title>
 			<v-card-text>
 				<v-form>
@@ -76,16 +76,26 @@
 							<v-btn color="red" outlined @click="removeItem(index)">Remove</v-btn>
 						</v-col>
 					</v-row>
-					<v-row>
-						<v-btn
-						@click="newItem"
-						>Add Line Item</v-btn>
+					<v-row >
+						<v-col cols="11">
+							<v-divider></v-divider>
+						</v-col>
+						<v-col cols="1" class="d-flex">
+							<v-btn
+							class="align-self-baseline"
+							@click="newItem"
+							icon
+							color="blue"
+							>
+								<v-icon>mdi-plus-circle</v-icon>
+							</v-btn>
+						</v-col>
 					</v-row>
 				</v-form>
 			</v-card-text>
-			<v-card-actions>
-				<v-btn @click="$emit('save')">Save</v-btn>
-				<v-btn color="red" @click="$emit('close')">Cancel</v-btn>
+			<v-card-actions class="d-flex justify-end">
+				<v-btn @click="$emit('save')" color="green lighten-2">Save</v-btn>
+				<v-btn color="red" @click="$emit('close')" outlined>Cancel</v-btn>
 			</v-card-actions>
 		</v-card>
 
@@ -146,6 +156,9 @@ export default {
 	methods: {
 		init() {
 			console.log(`there are ${this.receipt.items.length} items attached to this receipt`);
+			if(typeof this.receipt.items === 'undefined') {
+				this.receipt.items = [];
+			}
 			// if(this.receipt.items.length === 0) {
 			// 	this.newItem();
 			// }

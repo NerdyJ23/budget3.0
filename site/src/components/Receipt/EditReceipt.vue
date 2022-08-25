@@ -42,37 +42,51 @@
 					<v-row v-for="(item, index) in receipt.items">
 						<v-col cols="5">
 							<v-text-field
-								label="Item Name"
+								:label="index === 0 ? 'Item Name' : ''"
 								v-model="item.name"
+								dense
 							></v-text-field>
-							{{item}}
 						</v-col>
 						<v-col cols="1">
 							<v-text-field
-								label="Count"
+								:label="index === 0 ? 'Count' : ''"
 								v-model="item.count"
 								:rules="rules.numberRules"
-								@change="validateItem(item)"
 								type="number"
+								dense
+							></v-text-field>
+						</v-col>
+						<v-col cols="1">
+							<v-text-field
+								:label="index === 0 ? 'Price (per item)' : ''"
+								v-model="item.price"
+								type="number"
+								step=".01"
+								prefix="$"
+								@blur="fixPrice(item, index)"
+								hide-spin-buttons
+								dense
+
+							></v-text-field>
+						</v-col>
+						<v-col cols="1">
+							<v-text-field disabled
+									prefix="$"
+									label="Total"
+									v-model="(item.price * item.total).toFixed(2)"
+									dense
 							></v-text-field>
 						</v-col>
 						<v-col cols="2">
 							<v-text-field
-								label="Price (per item)"
-								v-model="item.price"
-								@change="validateItem(item,key)"
-								type="currency"
-								prefix="$"
-							></v-text-field>
+							label="Category"
+							v-model="item.category"
+							dense
+							>
+
+							</v-text-field>
 						</v-col>
-						<v-col cols="2">
-							<v-text-field disabled
-									prefix="$"
-									label="Total"
-									v-model="item.total"
-							></v-text-field>
-						</v-col>
-						<v-col cols="2">
+						<v-col cols="1">
 							<v-btn color="red" outlined @click="removeItem(index)">Remove</v-btn>
 						</v-col>
 					</v-row>
@@ -104,8 +118,12 @@
 				<template v-slot="{item}">
 					<v-row>
 						<v-col cols="12" class="d-flex align-end">
-							<v-spacer></v-spacer>
-							<v-btn class="px-2 mx-2" @click.stop="datePick = false">Save</v-btn>
+							<v-btn
+							class="px-2 mx-2 flex-grow-1"
+							@click.stop="datePick = false"
+							color="green"
+							outlined
+							>Save</v-btn>
 						</v-col>
 					</v-row>
 
@@ -186,14 +204,19 @@ export default {
 			console.log(item.price);
 			item.price = parseInt(item.price).toFixed(2);
 			item.total = (parseInt(item.count) * parseInt(item.price)).toFixed(2);
+		},
+		fixPrice(item, index) {
+			console.log(item);
+			item.price = parseFloat(item.price).toFixed(2);
+			this.refresh();
+		},
+		refresh() {
+			this.receipt.items.push({});
+			this.receipt.items.pop();
 		}
 	},
 	computed: {
 		receiptLoaded() {
-			console.log(`receipt`);
-			console.log(this.receipt);
-			console.log(`receipt type: ${typeof this.receipt}`);
-			console.log(`loaded? ${typeof this.receipt !== 'boolean'}`)
 			return typeof this.receipt.name !== 'undefined';
 		},
 	}

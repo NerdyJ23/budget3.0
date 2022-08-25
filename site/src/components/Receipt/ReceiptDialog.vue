@@ -6,6 +6,8 @@
     >
 		<EditReceipt v-if="options.mode === defaults.mode[1] || options.mode === defaults.mode[2]" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
 		<ViewReceipt v-if="options.mode === defaults.mode[0]" :receipt="receipt" @close="hide"></ViewReceipt>
+
+		<StatusBanner ref="banner"></StatusBanner>
     </v-dialog>
 
 </div>
@@ -14,6 +16,7 @@
 <script>
 import EditReceipt from './EditReceipt';
 import ViewReceipt from './ViewReceipt';
+import StatusBanner from '../Utility/StatusBanner';
 
 export default {
 	beforeMount() {
@@ -45,6 +48,7 @@ export default {
 	components: {
 		EditReceipt,
 		ViewReceipt,
+		StatusBanner,
 	},
 	provide: function () {
 		return {
@@ -85,29 +89,40 @@ export default {
 			return false;
 		},
 		save() {
-			if(this.options.mode === this.defaults.mode[2]) { //Add
+			let formData = new FormData();
+			let url = '';
+			let method = this.options.mode === this.defaults.mode[2] ? 'PUT' : 'PATCH';
 
+			if(this.options.mode === this.defaults.mode[2]) { //Add
+				formData.append('name', this.receipt.name);
+				formData.append('date', this.receipt.date);
+				formData.append('items', JSON.stringify(this.receipt.items));
+
+				url = `${this.$store.state.api}/receipt/`;
 			} else if(this.options.mode === this.defaults.mode[1]) { //Edit
-				let formData = new FormData();
 				formData.append('receipt', JSON.stringify(this.receipt));
-				console.log(`${this.$store.state.api}/receipt/${this.receipt.id}`);
-				fetch(`${this.$store.state.api}/receipt/${this.receipt.id}`, {
-					method: 'PATCH',
-					body: (new URLSearchParams(formData)),
-					credentials: 'include'
-				}).then(response => {
-					if (response.status === 200) {
-						return response.json();
-					} else {
-						throw new Error();
-					}
-				}).then(data => {
-					console.log(data);
-				}).catch(err => {
-					console.error(err);
-				})
+				url = `${this.$store.state.api}/receipt/${this.receipt.id}`;
 			}
-			this.hide();
+			fetch(url, {
+				method: method,
+				body: (new URLSearchParams(formData)),
+				credentials: 'include'
+			}).then(response => {
+				if (response.status === 200) {
+					return response.json();
+				} else {
+					throw new Error();
+				}
+			}).then(data => {
+				this.$refs.banner.setStatus('Success');
+				this.$refs.banner.setStatusMessage('Saved successfully!');
+				setTimeout(() => {this.hide()}, 1000);
+				console.log(data);
+			}).catch(err => {
+				this.$refs.banner.setStatus('Fail');
+				this.$refs.banner.setStatusMessage('uhoh!');
+				console.error(err);
+			})
 		}
 	}
 }

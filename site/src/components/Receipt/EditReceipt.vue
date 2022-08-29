@@ -39,7 +39,7 @@
 					<v-divider></v-divider>
 					<br />
 					<!-- Item Rows Here -->
-					<v-row v-for="(item, index) in receipt.items">
+					<v-row v-for="(item, index) in receipt.items" :key="item.id">
 						<v-col cols="5">
 							<v-text-field
 								:label="index === 0 ? 'Item Name' : ''"
@@ -59,11 +59,11 @@
 						<v-col cols="1">
 							<v-text-field
 								:label="index === 0 ? 'Price (per item)' : ''"
-								v-model="item.price"
+								v-model="item.cost"
 								type="number"
 								step=".01"
 								prefix="$"
-								@blur="fixPrice(item, index)"
+								@change="fixPrice(item, index)"
 								hide-spin-buttons
 								dense
 
@@ -73,8 +73,8 @@
 							<v-text-field disabled
 									prefix="$"
 									label="Total"
-									v-model="(item.price * item.total).toFixed(2)"
 									dense
+									:value="item.cost * item.count"
 							></v-text-field>
 						</v-col>
 						<v-col cols="2">
@@ -150,9 +150,10 @@ export default {
 			},
 			defaults: {
 				item: {
+					id: 0,
 					name: '',
 					count: 1,
-					price: 0,
+					cost: 0,
 					category: '',
 					total: 0
 				}
@@ -168,57 +169,67 @@ export default {
 	},
 	mounted() {
 		this.init();
+		console.log('Edit Receipt mounted');
 	},
 
 	inject: ['getReceipt'],
 	methods: {
 		init() {
-			console.log(`there are ${this.receipt.items.length} items attached to this receipt`);
-			if(typeof this.receipt.items === 'undefined') {
-				this.receipt.items = [];
-			}
-			// if(this.receipt.items.length === 0) {
-			// 	this.newItem();
-			// }
+			this.setDefaults();
 			this.show();
 		},
 		show() {
 			this.visible = true;
-			this.receipt = this.getReceipt();
-			console.log('receipt is');
-			console.log(this.receipt);
+			this.receipt = JSON.parse(this.getReceipt());
+			console.log(`After show name is ${this.receipt.name}`);
 		},
 		newItem() {
 			var newItem = {};
 			Object.entries(this.defaults.item).forEach(entry => {
 				const [key, value] = entry;
 				newItem[key] = value;
-			})
+			});
 			this.receipt.items.push(newItem);
 		},
 		removeItem(item) {
 			console.log(item);
 			this.receipt.items.splice(item,1);
 		},
-		validateItem(item, key) {
-			console.log(item.price);
-			item.price = parseInt(item.price).toFixed(2);
-			item.total = (parseInt(item.count) * parseInt(item.price)).toFixed(2);
-		},
 		fixPrice(item, index) {
-			console.log(item);
-			item.price = parseFloat(item.price).toFixed(2);
-			this.refresh();
+			//fix for floating point number not rounding up on 5
+			const lastChar = item.cost.slice(-1);
+			if(lastChar === '5') { // 0.5 is really 0.49999999999~
+				item.cost = parseFloat(item.cost) + .001;
+			}
+			this.receipt.items[index].cost = parseFloat(item.cost).toFixed(2);
 		},
 		refresh() {
 			this.receipt.items.push({});
 			this.receipt.items.pop();
+		},
+		setDefaults() {
+			console.log('Defaults being set');
+			this.receipt = {
+				name: '',
+				items: []
+			};
+			console.log(`Receipt default name is ${this.receipt.name}`);
+			this.visible = false;
+			this.datePick = false;
 		}
 	},
 	computed: {
 		receiptLoaded() {
 			return typeof this.receipt.name !== 'undefined';
 		},
-	}
+	},
+	// watch: {
+	// 	visible: function (oldVal, newVal) {
+	// 		this.$nextTick(() => {
+	// 			console.log('visible changed');
+	// 			this.init();
+	// 		});
+	// 	}
+	// }
 }
 </script>

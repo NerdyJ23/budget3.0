@@ -86,7 +86,7 @@
 		</v-data-table>
 	</v-card-text>
 </v-card>
-<ReceiptDialog ref="receiptDialog"></ReceiptDialog>
+<ReceiptDialog ref="receiptDialog" @updated="loadReceipts"></ReceiptDialog>
 </div>
 <AccessDeniedPage v-else></AccessDeniedPage>
 </template>
@@ -144,7 +144,7 @@ export default {
 			this.loaded = false;
 			const today = new Date();
 			const selectedMonth = this.months.indexOf(this.selectedMonth) > -1 ? this.months.indexOf(this.selectedMonth) : today.getMonth();
-			console.log('loading');
+
 			fetch(`${this.apiUrl}/receipt?month=${selectedMonth}&year=${this.selectedYear}`, {
 				method: 'GET',
 				credentials: 'include'
@@ -206,13 +206,8 @@ export default {
 		editReceipt(receipt) {
 			this.$refs.receiptDialog.setMode('Edit');
 			this.$refs.receiptDialog.show();
-			this.$refs.receiptDialog.receipt = {
-				id: receipt.id,
-				name: receipt.name,
-				date: receipt.date
-			};
-			console.log('ref receipt is');
-			console.log(this.$refs.receiptDialog.receipt);
+
+			this.$refs.receiptDialog.setReceipt(JSON.stringify(receipt));
 		},
 		addReceipt() {
 			this.$refs.receiptDialog.setMode('Add');

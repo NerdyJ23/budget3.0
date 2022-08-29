@@ -5,7 +5,7 @@
 		max-width="75vw"
     >
 		<EditReceipt v-if="options.mode === defaults.mode[1] || options.mode === defaults.mode[2]" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
-		<ViewReceipt v-if="options.mode === defaults.mode[0]" :receipt="receipt" @close="hide"></ViewReceipt>
+		<ViewReceipt v-if="options.mode === defaults.mode[0]" :receipt="receipt" @close="hide" key="view"></ViewReceipt>
 
 		<StatusBanner ref="banner"></StatusBanner>
     </v-dialog>
@@ -19,7 +19,7 @@ import ViewReceipt from './ViewReceipt';
 import StatusBanner from '../Utility/StatusBanner';
 
 export default {
-	beforeMount() {
+	mounted() {
 		this.init();
 	},
     data: function () {
@@ -57,15 +57,15 @@ export default {
 	},
 	methods: {
 		init() {
-			if(this.options.mode === '') {
+			if (this.options.mode === '') {
 				this.options.mode = this.defaults.mode[0];
 			}
 			console.log(`mode: ${this.options.mode}`);
+			console.log('Receipt Dialog Mounted');
 		},
 		show() {
-			// this.$refs.editReceipt.receipt = this.receipt;
-			this.receipt = this.defaults.receipt;
 			this.visible = true;
+			this.receipt = this.defaults.receipt;
 		},
 
 		hide() {
@@ -73,16 +73,19 @@ export default {
 			this.init();
 		},
 		getReceipt() {
-			return this.receipt;
+			return JSON.stringify(this.receipt);
+		},
+		setReceipt(receipt) {
+			this.receipt = JSON.parse(receipt);
 		},
 		setMode(mode) {
-			if(this.validMode(mode)) {
+			if (this.validMode(mode)) {
 				this.options.mode = mode;
 			}
 		},
 		validMode(mode) {
-			if(typeof mode !== 'undefined') {
-				if(this.defaults.mode.indexOf(mode) !== -1) {
+			if (typeof mode !== 'undefined') {
+				if (this.defaults.mode.indexOf(mode) !== -1) {
 					return true;
 				}
 			}
@@ -93,16 +96,17 @@ export default {
 			let url = '';
 			let method = this.options.mode === this.defaults.mode[2] ? 'PUT' : 'PATCH';
 
-			if(this.options.mode === this.defaults.mode[2]) { //Add
+			if (this.options.mode === this.defaults.mode[2]) { //Add
 				formData.append('name', this.receipt.name);
 				formData.append('date', this.receipt.date);
 				formData.append('items', JSON.stringify(this.receipt.items));
 
 				url = `${this.$store.state.api}/receipt/`;
-			} else if(this.options.mode === this.defaults.mode[1]) { //Edit
+			} else if (this.options.mode === this.defaults.mode[1]) { //Edit
 				formData.append('receipt', JSON.stringify(this.receipt));
 				url = `${this.$store.state.api}/receipt/${this.receipt.id}`;
 			}
+			console.log(JSON.stringify((this.receipt)));
 			fetch(url, {
 				method: method,
 				body: (new URLSearchParams(formData)),
@@ -116,7 +120,10 @@ export default {
 			}).then(data => {
 				this.$refs.banner.setStatus('Success');
 				this.$refs.banner.setStatusMessage('Saved successfully!');
-				setTimeout(() => {this.hide()}, 1000);
+				setTimeout(() => {
+					this.hide();
+					this.$emit('updated');
+				}, 500);
 				console.log(data);
 			}).catch(err => {
 				this.$refs.banner.setStatus('Fail');

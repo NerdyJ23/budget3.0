@@ -25,7 +25,7 @@
 			</v-row>
 			<v-row v-else>
 				<v-col cols="8"></v-col>
-				<v-col cols="4" >Total: ${{receipt.cost}}</v-col>
+				<v-col cols="4" >Total: ${{receipt.cost.toFixed(2)}}</v-col>
 			</v-row>
 		</v-card-text>
 	</v-card>

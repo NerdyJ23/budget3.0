@@ -66,7 +66,8 @@ class ReceiptsController extends ApiController {
 		$this->set('token', $input->getCookie('token'));
 
 		$receipt = $this->fetchTable('Receipts')->newEntity([
-			'Location' => $input->getData('name'),
+			'Name' => $input->getData('name'),
+			'Location' => $input->getData('location'),
 			'User' => $user, // 'User' => $input->getQuery('user')
 			'Date' => $input->getData('date'),
 			'Cost' => 0,
@@ -90,6 +91,8 @@ class ReceiptsController extends ApiController {
 			$receiptTotal += intval($items[$i]->count) * floatval($items[$i]->cost);
 		}
 		$this->updateTotal($receiptTotal, $result->ID);
+		$result->Category = $this->setCategory($result->ID);
+		$result = $this->getTableLocator()->get('Receipts')->save($result);
 		$this->setSuccess(true);
 		return;
 	}

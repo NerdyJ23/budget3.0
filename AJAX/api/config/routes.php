@@ -15,7 +15,9 @@ return static function (RouteBuilder $routes) {
 
 		$builder->scope('/receipt', function (RouteBuilder $builder) {
 			$builder->applyMiddleware('auth');
-			$builder->connect('/', 'Receipts::list');
+			$builder->get('/', 'Receipts::list');
+            $builder->put('/', 'Receipts::create');
+
 			$builder->patch('/{id}', 'Receipts::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Receipts::get')->setPass(['id']);
 		});

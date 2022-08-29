@@ -7,6 +7,7 @@ use App\Controller\Security\EncryptionController;
 use App\Controller\Security\AuthenticationController;
 use Cake\Http\Cookie\Cookie;
 use DateTime;
+
 class UsersController extends ApiController {
 	public function initialize(): void {
 		parent::initialize();
@@ -16,8 +17,16 @@ class UsersController extends ApiController {
 		$this->set('result', (new AuthenticationController)->validUser('admin','PASSWORD'));
 	}
 
-	public function get($user) {
-
+	public function get($token) {
+		$query = $this->Users->find('all')
+			->where(['Users.token IS ' => $token])
+			->limit(1);
+		$data = $query->all()->toArray();
+		if(sizeof($data) > 0) {
+			return $data[0]->id;
+		} else {
+			return -1;
+		}
 	}
 
 	public function login() {
@@ -33,7 +42,7 @@ class UsersController extends ApiController {
 
 			$this->_loginAuth($data[0]);
 		} else {
-			$this->response = $this->response->withStatus(403);
+			$this->response = $this->response->withStatus(403, 'Login failed. Check credentials are correct');
 		}
 	}
 
@@ -52,17 +61,21 @@ class UsersController extends ApiController {
 
 		if($result != false) {
 			// $response = $this->response;
-			$this->response = $this->response->withCookie(Cookie::create(
+			$cookie = Cookie::create(
 				'token',
 				$u->token,
 				[
 					'expires' => new DateTime('+ 7 days'),
-					'httpOnly' => false
-				]
-			));
+					'httpOnly' => false,
+					'secure' => true,
+					'domain' => 'budget.jessprogramming.com'
+			]);
+			// $cookie = $cookie
+			// 	->withSameSite('None')
+			// 	->withSecure(true);
+			$this->response = $this->response->withCookie($cookie);
 			// $response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
-			$this->response = $this->response->withStatus(200);
-			$this->response = $this->response->withHeader('Access-Control-Allow-Credentials', 'true');
+			$this->response = $this->response->withStatus(200, 'Logged in successfully');
 		} else {
 			$this->response = $this->response->withStatus(400);
 		}

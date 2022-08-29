@@ -11,7 +11,7 @@ class Receipt extends Entity {
 	protected $_accessible = [
 		'ID' => false,
 		'User' => true,
-		'Store' => true,
+		'Name' => true,
 		'Location' => true,
 		'Cost' => true,
 		'Date' => true,

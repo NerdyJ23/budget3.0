@@ -11,7 +11,7 @@ use Cake\Auth\WeakPasswordHasher;
 use App\Controller\Component\Enum\Success;
 
 class ApiController extends Controller {
-	private $success = Success::NONE;
+	public $success = Success::NONE;
 
 	public function initialize(): void {
 		parent::initialize();
@@ -28,8 +28,8 @@ class ApiController extends Controller {
 		->allowOrigin('*.jessprogramming.com')
 		->build();
 		$this->response = $this->response->withHeader('Access-Control-Allow-Credentials', 'true');
-		$this->set('success', $this->getSuccess());
 		$this->viewBuilder()->setOption('serialize',true);
+
 	}
 
 	protected function _isPushingData() {
@@ -41,15 +41,16 @@ class ApiController extends Controller {
 	}
 
 	public function setSuccess($result) {
-		$this->success = Success::SUCCESS;
 
 		if($this->getSuccess() === Success::NONE) {
 			$this->success = $result ? Success::SUCCESS : Success:: FAIL;
 		} else if ($this->getSuccess() === Success::PARTIAL) {
 
-		} else if ($this->getSuccess() === Success::SUCCESS) {
-			if(!$result) {
-				$this->success = Success::PARTIAL;
+		} else {
+			if ($this->getSuccess() === Success::SUCCESS) {
+				$this->success = $result ? $this->getSuccess() : Success::FAIL;
+			} else if ($this->getSuccess() === Success::FAIL) {
+				$this->success = $result ? Success::PARTIAL : $this->getSuccess();
 			}
 		}
 	}

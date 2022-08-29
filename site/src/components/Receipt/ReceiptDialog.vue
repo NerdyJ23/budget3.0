@@ -101,6 +101,7 @@ export default {
 
 			if (this.options.mode === this.defaults.mode[2]) { //Add
 				formData.append('name', this.receipt.name);
+				formData.append('location', this.receipt.location);
 				formData.append('date', this.receipt.date);
 				formData.append('items', JSON.stringify(this.receipt.items));
 

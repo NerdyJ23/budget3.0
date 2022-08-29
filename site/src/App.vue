@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <v-main>
-      <Navbar></Navbar>
-      <v-divider></v-divider>
-      <router-view></router-view>
+		<Navbar></Navbar>
+		<v-divider></v-divider>
+		<router-view></router-view>
     </v-main>
   </v-app>
 </template>
@@ -12,10 +12,13 @@
 import Navbar from './components/Utility/Nav';
 
 export default {
-  name: 'App',
-  components: {
-	Navbar
-  }
+	mounted() {
+		this.$vuetify.theme.dark = true;
+	},
+  	name: 'App',
+  	components: {
+		Navbar
+  	}
 }
 </script>
 
@@ -33,11 +36,11 @@ export default {
 }
 .receipt {
 	font-family: "Ticket";
-	font-size: 24px;
+	font-size: 2em;
 }
 
 .receipt-item {
-	font-family: "Coder-Font";
-	font-size: 24px;
+	font-family: "Ticket";
+	font-size: 1.25em;
 }
 </style>

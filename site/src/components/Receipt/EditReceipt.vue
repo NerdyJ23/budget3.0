@@ -1,7 +1,9 @@
 <template>
 	<div v-if="visible">
 		<v-card class="pa-4">
-			<v-card-title class="text-center justify-space-around receipt">{{mode}} Receipt</v-card-title>
+			<v-card-title class="justify-space-around">
+				<span class="receipt primary--text">{{mode}} Receipt</span>
+			</v-card-title>
 			<v-card-text>
 				<v-form>
 					<v-row>
@@ -15,6 +17,7 @@
 							<v-text-field
 							v-model="receipt.date"
 							prepend-icon="mdi-calendar"
+							class="primary--icon"
 							@click="datePick = true"
 							label="Date"
 							readonly
@@ -74,42 +77,46 @@
 									prefix="$"
 									label="Total"
 									dense
-									:value="item.cost * item.count"
+									:value="(item.cost * item.count).toFixed(2)"
 							></v-text-field>
 						</v-col>
 						<v-col cols="2">
 							<v-text-field
 							label="Category"
 							v-model="item.category"
+							@input="item.category = item.category.toUpperCase()"
 							dense
 							>
 
 							</v-text-field>
 						</v-col>
 						<v-col cols="1">
-							<v-btn color="red" outlined @click="removeItem(index)">Remove</v-btn>
+							<v-btn color="error" outlined @click="removeItem(index)">Remove</v-btn>
 						</v-col>
 					</v-row>
 					<v-row >
-						<v-col cols="11">
-							<v-divider></v-divider>
+						<v-col cols="5" class="d-flex">
+							<v-divider class="align-self-center"></v-divider>
 						</v-col>
-						<v-col cols="1" class="d-flex">
+						<v-col cols="2" class="d-flex justify-space-around">
 							<v-btn
-							class="align-self-baseline"
-							@click="newItem"
-							icon
-							color="blue"
+								class="align-self-centertext-center"
+								@click="newItem"
+								outlined
+
 							>
-								<v-icon>mdi-plus-circle</v-icon>
+								Add new item
 							</v-btn>
+						</v-col>
+						<v-col cols="5" class="d-flex">
+							<v-divider class="align-self-center"></v-divider>
 						</v-col>
 					</v-row>
 				</v-form>
 			</v-card-text>
 			<v-card-actions class="d-flex justify-end">
-				<v-btn @click="$emit('save')" color="green lighten-2">Save</v-btn>
-				<v-btn color="red" @click="$emit('close')" outlined>Cancel</v-btn>
+				<v-btn @click="$emit('save')" color="primary">Save</v-btn>
+				<v-btn color="error" @click="$emit('close')" outlined>Cancel</v-btn>
 			</v-card-actions>
 		</v-card>
 

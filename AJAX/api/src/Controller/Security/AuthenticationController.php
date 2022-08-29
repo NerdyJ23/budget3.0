@@ -7,6 +7,7 @@ use Cake\Http\Cookie\Cookie;
 use DateTime;
 
 use App\Controller\UsersController;
+
 class AuthenticationController extends Controller {
 
 	public function initialize(): void {

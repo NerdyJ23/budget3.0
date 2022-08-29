@@ -5,13 +5,14 @@ use Cake\ORM\Entity;
 use App\Controller\Security\EncryptionController;
 
 class Item extends Entity {
+	protected $_hidden = ['Owner', 'ID', 'Receipt'];
 	protected $_accessible = [
 		'ID' => true,
 		'Receipt' => true,
-		'Name' => false,
-		'Count' => false,
-		'Cost' => false,
-		'Category' => false
+		'Name' => true,
+		'Count' => true,
+		'Cost' => true,
+		'Category' => true
 	];
 
 	protected function _getId() {

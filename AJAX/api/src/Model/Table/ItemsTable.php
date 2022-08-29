@@ -13,7 +13,7 @@ class ItemsTable extends Table {
 	}
 
 	public function beforeSave(EventInterface $event, $entity, $options) {
-
+		return true;
 	}
 }
 

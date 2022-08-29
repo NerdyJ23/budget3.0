@@ -11,6 +11,7 @@ class Receipt extends Entity {
 	protected $_accessible = [
 		'ID' => false,
 		'User' => true,
+		'Store' => true,
 		'Location' => true,
 		'Cost' => true,
 		'Date' => true,
@@ -35,6 +36,10 @@ class Receipt extends Entity {
 	public function setDate($date) {
 		$this->_fields['Date'] = $date;
 		$this->setDirty('Date');
+	}
+
+	public function validate(): bool {
+		return $this->has('Location');
 	}
 }
 ?>

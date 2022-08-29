@@ -7,13 +7,21 @@
 			<v-card-text>
 				<v-form>
 					<v-row>
-						<v-col cols="8">
+						<v-col cols="5">
 							<v-text-field
 								v-model="receipt.name"
-								label="Name/Location"
+								@blur="receipt.name = receipt.name.trim()"
+								label="Location"
 							></v-text-field>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="5">
+							<v-text-field
+								v-model="receipt.location"
+								@blur="receipt.location = receipt.location.trim()"
+								label="Store"
+							></v-text-field>
+						</v-col>
+						<v-col cols="2">
 							<v-text-field
 							v-model="receipt.date"
 							prepend-icon="mdi-calendar"
@@ -47,6 +55,7 @@
 							<v-text-field
 								:label="index === 0 ? 'Item Name' : ''"
 								v-model="item.name"
+								@blur="item.name = item.name.trim()"
 								dense
 							></v-text-field>
 						</v-col>

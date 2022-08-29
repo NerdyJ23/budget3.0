@@ -49,7 +49,7 @@
 			<template v-slot:item="{item}">
 				<tr @click="viewReceipt(item)" class="bg">
 					<td>
-						<span>{{item.name}}</span>
+						<span>{{item.name}} - {{item.location}}</span>
 					</td>
 					<td>
 						${{item.cost.toFixed(2)}}
@@ -127,7 +127,7 @@ export default {
 			const today = new Date();
 			const selectedMonth = this.months.indexOf(this.selectedMonth) > -1 ? this.months.indexOf(this.selectedMonth) : today.getMonth();
 
-			fetch(`${this.apiUrl}/receipt?month=${selectedMonth}&year=${this.selectedYear}`, {
+			fetch(`${this.apiUrl}/receipt?month=${selectedMonth+1}&year=${this.selectedYear}`, {
 				method: 'GET',
 				credentials: 'include'
 			}).then(response => {
@@ -159,8 +159,8 @@ export default {
 		},
 		init() {
 			const today = new Date();
-			this.selectedMonth = 'June';//this.months[today.getMonth()];
-			this.selectedYear = 2021;//today.getFullYear();
+			this.selectedMonth = this.months[today.getMonth()];
+			this.selectedYear = today.getFullYear();
 		},
 		readableDate(d) {
 			const tempDate = new Date(d);

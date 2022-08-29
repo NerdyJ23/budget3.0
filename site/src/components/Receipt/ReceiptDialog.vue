@@ -93,6 +93,8 @@ export default {
 		},
 		save() {
 			this.receipt = this.$refs.editReceipt.receipt;
+			this.receipt.delete = this.$refs.editReceipt.delete;
+
 			let formData = new FormData();
 			let url = '';
 			let method = this.options.mode === this.defaults.mode[2] ? 'PUT' : 'PATCH';

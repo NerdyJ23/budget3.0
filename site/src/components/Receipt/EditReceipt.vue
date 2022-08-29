@@ -148,14 +148,14 @@ export default {
 				name: '',
 				items: []
 			},
+			delete: [],
 			defaults: {
 				item: {
 					id: 0,
 					name: '',
 					count: 1,
 					cost: 0,
-					category: '',
-					total: 0
+					category: ''
 				}
 			},
 			visible: false,
@@ -193,6 +193,9 @@ export default {
 		},
 		removeItem(item) {
 			console.log(item);
+			if(item.id !== 0) {
+				this.delete.push(this.receipt.items[item]);
+			}
 			this.receipt.items.splice(item,1);
 		},
 		fixPrice(item, index) {

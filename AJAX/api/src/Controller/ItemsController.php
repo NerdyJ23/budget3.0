@@ -8,11 +8,36 @@ use Cake\Utility\Security;
 use Cake\Core\Configure;
 
 use App\Controller\Security\EncryptionController;
+use App\Model\Entity\Item;
 
 class ItemsController extends ApiController {
 
 	public function initialize(): void {
 		parent::initialize();
+	}
+
+	public function listDistinctCagetories($receiptID) {
+		return $this->Items->find()
+		->select(['Items.Category'])
+		->distinct(['Items.Category'])
+		->where(['Items.Receipt = ' => $receiptID])
+		->all()
+		->toArray();
+	}
+	public function create($item, $receiptId): Item {
+		$newItem = $this->fetchTable('Items')->newEntity([
+			'Receipt' => $receiptId,
+			'Name' => $item->name,
+			'Count' => $item->count,
+			'Cost' => $item->cost
+		]);
+
+		if($item->category !== '' && $item->category !== null ) {
+			$newItem->Category = $item->category;
+		}
+		$result = $this->fetchTable('Items')->save($newItem);
+		$this->setSuccess($result);
+		return $result;
 	}
 
 	public function update($item) {
@@ -30,18 +55,14 @@ class ItemsController extends ApiController {
 		}
 	}
 
-	public function create($item, $receiptId) {
-		$newItem = $this->fetchTable('Items')->newEntity([
-			'Receipt' => $receiptId,
-			'Name' => $item->name,
-			'Count' => $item->count,
-			'Cost' => $item->cost
-		]);
-
-		if($item->category !== '' && $item->category !== null ) {
-			$newItem->Category = $item->category;
+	public function delete($item) {
+		if((new EncryptionController)->decrypt($item->id) !== false) {
+			$toRemove = $this->Items->get((new EncryptionController)->decrypt($item->id));
+			$result = $this->Items->delete($toRemove);
+		} else {
+			$result = false;
 		}
-		$this->setSuccess($this->fetchTable('Items')->save($newItem));
+		return $result;
 	}
 
 }

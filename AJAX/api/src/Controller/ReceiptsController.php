@@ -6,13 +6,24 @@ use Cake\View\JsonView;
 
 use Cake\Utility\Security;
 use Cake\Core\Configure;
+use Cake\Event\EventInterface;
+
 use App\Controller\Security\EncryptionController;
+use App\Controller\ItemsController;
+use App\Controller\Component\Enum\Success;
 
 class ReceiptsController extends ApiController {
 	public function initialize(): void {
 		parent::initialize();
 	}
 
+	public function afterFilter(EventInterface $event) {
+		if ($this->getSuccess() === Success::FAIL) {
+			$this->response = $this->response->withStatus(400);
+		} else if ($this->getSuccess() === Success::PARTIAL) {
+			$this->response = $this->response->withStatus(422);
+		}
+	}
 	public function index() {
 		$this->set(['message','view help docs for details']);
 	}
@@ -26,7 +37,7 @@ class ReceiptsController extends ApiController {
 		$month = $this->request->getQuery('month') == null ?  date('m') : $this->request->getQuery('month');
 
 		$query = $this->Receipts->find('all')
-			->where(['month(Receipts.Date) =' => $month, 'year(Receipts.Date) =' => $year])
+			->where(['month(Receipts.Date) =' => $month, 'year(Receipts.Date) =' => $year, 'Receipts.Archive != 1'])
 			->contain(['Items'])
 			->limit($limit)
 			->page($page);
@@ -47,6 +58,42 @@ class ReceiptsController extends ApiController {
 		$this->getYears();
 	}
 
+	public function create() {
+		$input = $this->request;
+
+		$user = 1;//(new UsersController)->get($input->getCookie('token'));
+		$this->set('userid', $user);
+		$this->set('token', $input->getCookie('token'));
+
+		$receipt = $this->fetchTable('Receipts')->newEntity([
+			'Location' => $input->getData('name'),
+			'User' => $user, // 'User' => $input->getQuery('user')
+			'Date' => $input->getData('date'),
+			'Cost' => 0,
+		]);
+
+		$items = json_decode($input->getData('items'));
+		$result = $this->getTableLocator()->get('Receipts')->save($receipt);
+		$this->set('result of save', $result);
+		$receiptTotal = 0;
+		if ($result !== false) {
+			$this->setSuccess(true);
+		} else {
+			$this->setSuccess(false);
+			return;
+		}
+
+		$itemController = new ItemsController;
+
+		for($i = 0; $i < sizeOf($items); $i++) {
+			$itemController->create($items[$i], $result->ID);
+			$receiptTotal += intval($items[$i]->count) * floatval($items[$i]->cost);
+		}
+		$this->updateTotal($receiptTotal, $result->ID);
+		$this->setSuccess(true);
+		return;
+	}
+
 	public function get($id) {
 		$decrypted = (new EncryptionController)->decrypt($id);
 		if($decrypted != false) {
@@ -63,6 +110,62 @@ class ReceiptsController extends ApiController {
 		$this->response = $this->response->withStatus(200);
 
 	}
+	public function edit($id) {
+		$safeid = (new EncryptionController)->decrypt($id);
+		$itemController = new ItemsController;
+
+		if($safeid !== false) {
+			$newReceipt = json_decode($this->request->getData('receipt'));
+			if($newReceipt === null) {
+				$this->setSuccess(false);
+				return;
+			}
+			if(sizeOf($newReceipt->delete) > 0) {
+				foreach ($newReceipt->delete as $item) {
+					$this->setSuccess($itemController->delete($item));
+				}
+			}
+			$table = $this->getTableLocator()->get('Receipts');
+
+		if((new EncryptionController)->decrypt($newReceipt->id) == false) {
+			$this->setSuccess(false);
+			return;
+		} else {
+			$result = true;
+			$receipt = $table->get((new EncryptionController)->decrypt($newReceipt->id));
+
+			$this->set('input', $newReceipt);
+			$receiptTotal = 0;
+			foreach ($newReceipt->items as $item) {
+				if ($item->id === 0) {
+					$itemController->create($item, $receipt->ID);
+				} else {
+					$itemController->update($item);
+				}
+				$receiptTotal += $item->cost * $item->count;
+			}
+
+
+			$receipt->Name = $newReceipt->name;
+			$receipt->Location = $newReceipt->location;
+			$receipt->setDate($newReceipt->date);
+			$receipt->editedUTC = date('Y-m-s H:i:s');
+			$this->updateTotal($receiptTotal, (new EncryptionController)->decrypt($newReceipt->id));
+			$receipt->Category = $this->setCategory((new EncryptionController)->decrypt($newReceipt->id));
+			$result = $table->save($receipt);
+			$this->set('result', $result);
+		}
+
+		if($result !== false) {
+			$this->setSuccess(true);
+		} else {
+			$this->setSuccess(false);
+		}
+		} else {
+			$this->setSuccess(false);
+		}
+	}
+
 	public function getYears() {
 		$query = $this->Receipts->find()
 		->select([
@@ -73,24 +176,12 @@ class ReceiptsController extends ApiController {
 		$this->set('years', $data);
 	}
 
-	public function edit($id) {
-		$safeid = (new EncryptionController)->decrypt($id);
-		if($safeid != false) {
-			$receivedReceipt = json_decode($this->request->getData('receipt'));
-			$this->saveToReceipts($receivedReceipt);
-			$this->response = $this->response->withStatus(200);
-
-		} else {
-			$this->response = $this->response->withStatus(400);
-		}
-
-
-	}
 	private function encodeReceipt($receipt) {
 		return [
 			'id' => $receipt->get('encodedId'),
 			// 'userid' => $receipt->get('userId'),
-			'name' => $receipt->Location,
+			'name' => $receipt->Name,
+			'location' => $receipt->Location,
 			'cost' => $receipt->Cost,
 			'date' => $receipt->Date,
 			'category' => $receipt->get('category'),
@@ -112,18 +203,25 @@ class ReceiptsController extends ApiController {
 		return $items;
 	}
 
-	private function saveToReceipts($newReceipt) {
-		$table = $this->getTableLocator()->get('Receipts');
-		$receipt = $table->get((new EncryptionController)->decrypt($newReceipt->id));
-
-		$receipt->setName($newReceipt->name);
-		$receipt->setDate($newReceipt->date);
-		$result = $table->save($receipt);
-
-		if($result != false) {
-			$this->response = $this->response->withStatus(200);
+	private function updateTotal($total, $receiptID) {
+		$receipt = $this->Receipts->get($receiptID);
+		$receipt->Cost = $total;
+		$result = $this->Receipts->save($receipt);
+		if ($result !== false) {
+			$this->setSuccess(true);
 		} else {
-			$this->response = $this->response->withStatus(400);
+			$this->setSuccess(false);
+			return;
+		}
+	}
+
+	private function setCategory($receiptID) {
+		$itemController = new ItemsController;
+		$cat = $itemController->listDistinctCagetories($receiptID);
+		if(sizeOf($cat) != 1) {
+			return 'MIXED';
+		} else {
+			return $cat[0]->Category;
 		}
 	}
 }

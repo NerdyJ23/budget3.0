@@ -6,7 +6,7 @@ use App\Controller\Security\EncryptionController;
 
 class Receipt extends Entity {
 	protected $_virtual = ['encrypted_id'];
-	protected $_hidden = ['encrypted_id'];
+	protected $_hidden = ['encrypted_id', 'CreatedUTC'];
 
 	protected $_accessible = [
 		'ID' => false,
@@ -16,6 +16,8 @@ class Receipt extends Entity {
 		'Cost' => true,
 		'Date' => true,
 		'Category' => true,
+		'Archive' => true,
+		'EditedUTC' => true
 	];
 
 	protected function _getEncodedId() {

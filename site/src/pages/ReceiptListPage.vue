@@ -36,52 +36,34 @@
 		:search="search"
 		:items="receipts"
 		group-by="date"
-	    :single-expand="true"
-		show-expand
 		:loading="!loaded"
 		>
-			<template v-slot:item.cost="{item}">
-				${{item.cost.toFixed(2)}}
+			<template v-slot:group.header="{item, group, headers}">
+			<td :colspan="headers.length" class="primary">
+				<v-col cols="12">
+					<span class="receipt">{{group}}</span>
+				</v-col>
+			</td>
 			</template>
-			<template v-slot:item.name="{item}">
-				<span class="receipt-item">{{item.name}}</span>
-			</template>
-			<template v-slot:item.actions="{item}">
-			<div class="justify-end">
-				<v-btn icon @click.stop="editReceipt(item)"><v-icon color="blue lighten-2">mdi-pencil</v-icon></v-btn>
-				<v-btn icon><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
-			</div>
-			</template>
-			<template v-slot:expanded-item="{ headers, item }">
-				<td :colspan="headers.length" class="py-4">
-				<v-row class="font-weight-black text-uppercase pt-2" dense>
-					<v-col cols="1">
-					</v-col>
-					<v-col cols="5">
-						Name
-					</v-col>
-					<v-col cols="2">
-						Cost
-					</v-col>
-					<v-col cols="2">
-						Category
-					</v-col>
-				</v-row>
-				<v-divider class="pb-2"></v-divider>
-				<v-row v-for="a in item.items" :key="a.id" dense>
-					<v-col cols="1">
-					</v-col>
-					<v-col cols="5">
-						{{a.count}}x {{a.name}}
-					</v-col>
-					<v-col cols="2">
-						${{(a.count * a.cost).toFixed(2)}}
-					</v-col>
-					<v-col cols="2">
-						{{a.category}}
-					</v-col>
-				</v-row>
-				</td>
+
+			<template v-slot:item="{item}">
+				<tr @click="viewReceipt(item)" class="bg">
+					<td>
+						<span>{{item.name}} - {{item.location}}</span>
+					</td>
+					<td>
+						${{item.cost.toFixed(2)}}
+					</td>
+					<td>
+						{{item.category}}
+					</td>
+					<td class="d-flex justify-end">
+						<div>
+							<v-btn icon @click.stop="editReceipt(item)"><v-icon color="blue lighten-2">mdi-pencil</v-icon></v-btn>
+							<v-btn icon><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
+						</div>
+					</td>
+				</tr>
 			</template>
 		</v-data-table>
 	</v-card-text>
@@ -145,7 +127,7 @@ export default {
 			const today = new Date();
 			const selectedMonth = this.months.indexOf(this.selectedMonth) > -1 ? this.months.indexOf(this.selectedMonth) : today.getMonth();
 
-			fetch(`${this.apiUrl}/receipt?month=${selectedMonth}&year=${this.selectedYear}`, {
+			fetch(`${this.apiUrl}/receipt?month=${selectedMonth+1}&year=${this.selectedYear}`, {
 				method: 'GET',
 				credentials: 'include'
 			}).then(response => {
@@ -177,8 +159,8 @@ export default {
 		},
 		init() {
 			const today = new Date();
-			this.selectedMonth = 'June';//this.months[today.getMonth()];
-			this.selectedYear = 2021;//today.getFullYear();
+			this.selectedMonth = this.months[today.getMonth()];
+			this.selectedYear = today.getFullYear();
 		},
 		readableDate(d) {
 			const tempDate = new Date(d);
@@ -212,6 +194,12 @@ export default {
 		addReceipt() {
 			this.$refs.receiptDialog.setMode('Add');
 			this.$refs.receiptDialog.show();
+		},
+		viewReceipt(receipt) {
+			this.$refs.receiptDialog.setMode('View');
+			this.$refs.receiptDialog.show();
+
+			this.$refs.receiptDialog.setReceipt(JSON.stringify(receipt));
 		}
 	},
 	watch: {

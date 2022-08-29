@@ -2,7 +2,7 @@
 <div v-if="visible">
     <v-dialog
 		v-model="visible"
-		max-width="75vw"
+		:max-width="options.mode === defaults.mode[0] ? '45vw' : '75vw'"
     >
 		<EditReceipt v-if="options.mode === defaults.mode[1] || options.mode === defaults.mode[2]" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
 		<ViewReceipt v-if="options.mode === defaults.mode[0]" :receipt="receipt" @close="hide" key="view"></ViewReceipt>
@@ -93,6 +93,8 @@ export default {
 		},
 		save() {
 			this.receipt = this.$refs.editReceipt.receipt;
+			this.receipt.delete = this.$refs.editReceipt.delete;
+
 			let formData = new FormData();
 			let url = '';
 			let method = this.options.mode === this.defaults.mode[2] ? 'PUT' : 'PATCH';
@@ -135,9 +137,8 @@ export default {
 	}
 }
 </script>
-
 <style scoped>
-.receipt {
-	font-size: 3em !important;
+/deep/ .receipt {
+	font-size: 2em !important;
 }
 </style>

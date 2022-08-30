@@ -5,41 +5,26 @@
   "scripts": {
     "serve": "vue-cli-service serve --port 1234",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "core-js": "^3.25.0",
+    "core-js": "^3.8.3",
     "js-cookie": "^3.0.1",
-    "vue": "^2.7.10",
-    "vue-router": "^3.6.4",
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.4",
     "vuetify": "^2.6.0",
-    "vuex": "^3.6.2",
-    "webpack": "^5.74.0"
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.13",
+    "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
-    "@storybook/addon-actions": "^6.5.10",
-    "@storybook/addon-essentials": "^6.5.10",
-    "@storybook/addon-interactions": "^6.5.10",
-    "@storybook/addon-links": "^6.5.10",
-    "@storybook/builder-webpack4": "^6.5.10",
-    "@storybook/builder-webpack5": "^6.5.10",
-    "@storybook/manager-webpack4": "^6.5.10",
-    "@storybook/manager-webpack5": "^6.5.10",
-    "@storybook/testing-library": "0.0.13",
-    "@storybook/vue": "^6.5.10",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
-    "babel-loader": "^8.2.5",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
-    "vue-cli-plugin-vuetify": "^2.5.5",
-    "vue-loader": "^15.10.0",
-    "vue-template-compiler": "^2.7.10",
+    "vue-cli-plugin-vuetify": "~2.5.1",
+    "vue-template-compiler": "^2.6.14",
     "vuetify-loader": "^1.7.0"
   },
   "eslintConfig": {

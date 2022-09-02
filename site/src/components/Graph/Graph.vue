@@ -196,18 +196,14 @@ export default {
 
 		// Append '4d' to the colors (alpha channel), except for the hovered index
 		handleHover(evt, item, legend) {
-			// console.log(item);
-			// console.log(legend);
 			for(const dataset of legend.chart.data.datasets) {
 				if(dataset.label !== item.text) {
-					// console.log(dataset);
 					dataset.backgroundColor = dataset.backgroundColor.slice(0, dataset.backgroundColor.lastIndexOf(','));
 					console.log(dataset.backgroundColor);
 					dataset.backgroundColor += ', 0.2)'
 				}
 			}
 			legend.chart.update();
-			// legend.chart.update();
 		},
 
 		// Removes the alpha channel from background colors
@@ -226,7 +222,6 @@ export default {
 	}
 	,watch: {
 		'config.type'() {
-			// console.log(this.config.type);
 			this.chartRef.destroy();
 			this.generateGraph(this.config.type);
 		}

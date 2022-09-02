@@ -139,7 +139,7 @@ export default {
 }
 </script>
 <style scoped>
-/deep/ .receipt {
+:deep(.receipt) {
 	font-size: 2em !important;
 }
 </style>

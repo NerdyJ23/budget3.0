@@ -15,9 +15,13 @@
 
 				</v-switch>
 			</div>
-			<div>
-				<canvas ref="budgetChart"></canvas>
-			</div>
+			<v-row>
+			<v-col cols="2"></v-col>
+				<v-col cols="8">
+					<canvas class="justify-space-around" ref="budgetChart"></canvas>
+				</v-col>
+			<v-col cols="2"></v-col>
+			</v-row>
 		</v-card-text>
 	</v-card>
 </template>
@@ -50,7 +54,8 @@ export default {
 				},
 				id: 0,
 				options: {
-					order: 1,
+					responsive: true,
+					events: ["mousemove", "mouseout"],
 					plugins: {
 						title: {
 							display: true,
@@ -178,6 +183,7 @@ export default {
 					data: {},
 					skipNull: true,
 					grouped: false,
+					onHover: this.hoverBar,
 					backgroundColor: `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`
 				};
 				temp.data[labels[item]] = values[item];
@@ -185,6 +191,8 @@ export default {
 			}
 
 			this.config.options.plugins.title.text = this.currentMonth;
+			this.config.options.onHover = this.hoverBar;
+			// this.config.options.mouseOut = this.leaveBar;
 			console.log(this.config);
 
 			this.config.options.plugins.legend.onHover = this.handleHover;
@@ -199,7 +207,6 @@ export default {
 			for(const dataset of legend.chart.data.datasets) {
 				if(dataset.label !== item.text) {
 					dataset.backgroundColor = dataset.backgroundColor.slice(0, dataset.backgroundColor.lastIndexOf(','));
-					console.log(dataset.backgroundColor);
 					dataset.backgroundColor += ', 0.2)'
 				}
 			}
@@ -213,6 +220,58 @@ export default {
 				dataset.backgroundColor += ', 1)'
 			}
 			legend.chart.update();
+		},
+
+		hoverBar(evt, item, chart) {
+
+			let alpha = "";
+			let index = -1;
+			if(item.length > 0) {
+				alpha = ", 0.2)";
+				index = item[0].datasetIndex;
+			} else {
+				alpha = ", 1)";
+				this.leaveBar(evt, item, chart);
+			}
+
+			for(const bar in chart.config._config.data.datasets) {
+				let bg = chart.config._config.data.datasets[bar].backgroundColor;
+				bg = bg.slice(0, bg.lastIndexOf(","));
+
+				let changeBg = false;
+				if(index == -1) {
+					changeBg = true;
+					bg += alpha;
+				} else if(item[0].datasetIndex != bar) {
+					changeBg = true;
+				}
+
+				if(changeBg) {
+					bg += alpha;
+					chart.config._config.data.datasets[bar].backgroundColor = bg;
+				}
+			}
+			chart.update();
+
+		},
+		leaveBar(evt, item, chart) {
+						if(item.length > 0) {
+				if(item[0].element.constructor.name === "BarElement") {
+					console.log(chart.config._config);
+					for(const bar in chart.config._config.data.datasets) {
+					let bg = chart.config._config.data.datasets[bar].backgroundColor;
+						if(item[0].datasetIndex !== bar) {
+							bg = bg.slice(0, bg.lastIndexOf(","));
+							bg += ", 1)";
+							chart.config._config.data.datasets[bar].backgroundColor = bg;
+							console.log(chart.update());
+							console.log(chart.config._config.data.datasets[bar].backgroundColor);
+						}
+
+					}
+
+				}
+			}
 		}
 	}
 	,computed: {

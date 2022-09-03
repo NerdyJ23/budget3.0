@@ -88,7 +88,7 @@ class ReceiptsController extends ApiController {
 
 		for($i = 0; $i < sizeOf($items); $i++) {
 			$itemController->create($items[$i], $result->ID);
-			$receiptTotal += intval($items[$i]->count) * floatval($items[$i]->cost);
+			$receiptTotal += floatval($items[$i]->count) * floatval($items[$i]->cost);
 		}
 		$this->updateTotal($receiptTotal, $result->ID);
 		$result->Category = $this->setCategory($result->ID);
@@ -145,7 +145,7 @@ class ReceiptsController extends ApiController {
 				} else {
 					$itemController->update($item);
 				}
-				$receiptTotal += $item->cost * $item->count;
+				$receiptTotal += floatval($item->cost) * floatval($item->count);
 			}
 
 

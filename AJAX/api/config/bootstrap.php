@@ -187,7 +187,11 @@ ServerRequest::addDetector('tablet', function ($request) {
     return $detector->isTablet();
 });
 
-header('Access-Control-Allow-Origin: https://budget.jessprogramming.com');
+if(env("DEBUG") == "true") {
+    header('Access-Control-Allow-Origin: http://localhost:1234');
+} else {
+    header('Access-Control-Allow-Origin: https://budget.jessprogramming.com');
+}
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: POST, GET, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: *');

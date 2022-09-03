@@ -28,8 +28,8 @@ class ItemsController extends ApiController {
 		$newItem = $this->fetchTable('Items')->newEntity([
 			'Receipt' => $receiptId,
 			'Name' => $item->name,
-			'Count' => $item->count,
-			'Cost' => $item->cost
+			'Count' => floatval($item->count),
+			'Cost' => floatval($item->cost)
 		]);
 
 		if($item->category !== '' && $item->category !== null ) {
@@ -47,8 +47,8 @@ class ItemsController extends ApiController {
 		} else {
 			$newItem = $table->get((new EncryptionController)->decrypt($item->id));
 			$newItem->Name = $item->name;
-			$newItem->Count = $item->count;
-			$newItem->Cost = $item->cost;
+			$newItem->Count = floatval($item->count);
+			$newItem->Cost = floatval($item->cost);
 			$newItem->Category = $item->category;
 
 			$this->setSuccess($table->save($newItem));

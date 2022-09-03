@@ -111,6 +111,7 @@ export default {
 					}
 				}).catch((error) => {
 					console.error(`${error.status}: ${error.statusText}`);
+					this.isLoading(false);
 					this.$refs.status.setStatus('Fail');
 					this.$refs.status.setStatusMessage(error.statusText);
 					this.password = '';

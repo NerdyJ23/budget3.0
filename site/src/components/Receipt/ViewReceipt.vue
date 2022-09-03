@@ -9,7 +9,15 @@
 			</v-row>
 			<v-row v-for="item in receipt.items" class="px-10">
 				<v-col cols="6">
-					{{item.name}}
+					<span v-if="isFloat(item.count)">
+						{{item.name}} - {{item.count}}kg
+					</span>
+					<span v-else-if="item.count > 1">
+						{{item.count}}x {{item.name}}
+					</span>
+					<span v-else>
+						{{item.name}}
+					</span>
 				</v-col>
 				<v-col cols="2">
 					${{(item.cost * item.count).toFixed(2)}}
@@ -42,6 +50,11 @@ export default {
 	mounted() {
 		console.log("moutned view");
 		console.log(this.receipt);
+	},
+	methods: {
+		isFloat(value) {
+			return (value.toString()).indexOf('.') !== -1;
+		}
 	}
 }
 </script>

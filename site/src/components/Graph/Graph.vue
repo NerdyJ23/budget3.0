@@ -7,26 +7,31 @@
 			<div>
 			Chart Type:
 				<v-switch
-					v-model=options.type
-					false-value="column"
+					v-model=config.type
+					false-value="bar"
 					true-value="pie"
-					:label="options.type === 'column' ? 'Column' : 'Pie'"
+					:label="config.type === 'bar' ? 'Bar' : 'Pie'"
 				>
 
 				</v-switch>
 			</div>
-			<div :style=chartHeight>
-				<div id="budgetChart" class="chart" style="width:50%"></div>
-			</div>
+			<v-row>
+			<v-col cols="2"></v-col>
+				<v-col cols="8">
+					<canvas class="justify-space-around" ref="budgetChart"></canvas>
+				</v-col>
+			<v-col cols="2"></v-col>
+			</v-row>
 		</v-card-text>
 	</v-card>
 </template>
 
 <script>
+import Chart from 'chart.js/auto';
+
 export default {
 	mounted() {
-		console.log(this.dataPoints);
-		this.generateGraph();
+		this.generateGraph(this.config.type);
 	}
 	,props: {
 		dataPoints: {
@@ -39,24 +44,29 @@ export default {
 			monthStruct: this.$store.state.months,
 			month: 0,
 			year: 0,
-			height: 0,
+			height: 200,
 			sortedData: null,
-			options: {
-				animationEnabled: true,
-				animationDuration: 500,
-				type: 'column',
-				axisX: {
-					title: "Month",
-					interval: 0
+			config: {
+				type: "bar",
+				data: {
+					datasets: [],
+					labels: []
 				},
-				axisY: {
-					suffix: "$"
-				},
-				legend: {
-					horizontalAlign: "right",
-					verticalAlign: "center"
-				},
-				data: []
+				id: 0,
+				options: {
+					responsive: true,
+					events: ["mousemove", "mouseout"],
+					plugins: {
+						title: {
+							display: true,
+							text:'undefined'
+
+						},
+						legend: {
+							display: true,
+						}
+					}
+				}
 			},
 			chartRef: null
 		}
@@ -137,24 +147,142 @@ export default {
 			chart.render();
 
 			this.chartRef = chart;
+		},
+		generateGraph(type) {
+			if(type === "bar") {
+				this.generateBarGraph();
+			} else if (type === "pie") {
+				this.generatePieGraph();
+			}
+
+		},
+		generateBarGraph() {
+			this.config.data.datasets = [];
+			this.config.data.labels= [];
+
+			const ctx = this.$refs.budgetChart;
+			console.log(this.$refs.budgetChart);
+
+			let values = [];
+			let labels = [];
+
+			for(const receipt of this.dataPoints) {
+				for(const item of receipt.items) {
+					if(labels.indexOf(item.category) === -1) {
+						labels.push(item.category);
+						values.push(item.cost * item.count);
+					} else {
+						var index = labels.indexOf(item.category);
+						values[index] += (item.cost * item.count);
+					}
+				}
+			}
+			for(const item in labels) {
+				let temp = {
+					label: labels[item],
+					data: {},
+					skipNull: true,
+					grouped: false,
+					onHover: this.hoverBar,
+					backgroundColor: `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`
+				};
+				temp.data[labels[item]] = values[item];
+				this.config.data.datasets.push(temp);
+			}
+
+			this.config.options.plugins.title.text = this.currentMonth;
+			this.config.options.onHover = this.hoverBar;
+			// this.config.options.mouseOut = this.leaveBar;
+			console.log(this.config);
+
+			this.config.options.plugins.legend.onHover = this.handleHover;
+			this.config.options.plugins.legend.onLeave = this.handleLeave;
+			const chart = new Chart(ctx, this.config);
+
+			this.chartRef = chart;
+		},
+
+		// Append '4d' to the colors (alpha channel), except for the hovered index
+		handleHover(evt, item, legend) {
+			for(const dataset of legend.chart.data.datasets) {
+				if(dataset.label !== item.text) {
+					dataset.backgroundColor = dataset.backgroundColor.slice(0, dataset.backgroundColor.lastIndexOf(','));
+					dataset.backgroundColor += ', 0.2)'
+				}
+			}
+			legend.chart.update();
+		},
+
+		// Removes the alpha channel from background colors
+		handleLeave(evt, item, legend) {
+			for(const dataset of legend.chart.data.datasets) {
+				dataset.backgroundColor = dataset.backgroundColor.slice(0, dataset.backgroundColor.lastIndexOf(','));
+				dataset.backgroundColor += ', 1)'
+			}
+			legend.chart.update();
+		},
+
+		hoverBar(evt, item, chart) {
+
+			let alpha = "";
+			let index = -1;
+			if(item.length > 0) {
+				alpha = ", 0.2)";
+				index = item[0].datasetIndex;
+			} else {
+				alpha = ", 1)";
+				this.leaveBar(evt, item, chart);
+			}
+
+			for(const bar in chart.config._config.data.datasets) {
+				let bg = chart.config._config.data.datasets[bar].backgroundColor;
+				bg = bg.slice(0, bg.lastIndexOf(","));
+
+				let changeBg = false;
+				if(index == -1) {
+					changeBg = true;
+					bg += alpha;
+				} else if(item[0].datasetIndex != bar) {
+					changeBg = true;
+				}
+
+				if(changeBg) {
+					bg += alpha;
+					chart.config._config.data.datasets[bar].backgroundColor = bg;
+				}
+			}
+			chart.update();
+
+		},
+		leaveBar(evt, item, chart) {
+						if(item.length > 0) {
+				if(item[0].element.constructor.name === "BarElement") {
+					console.log(chart.config._config);
+					for(const bar in chart.config._config.data.datasets) {
+					let bg = chart.config._config.data.datasets[bar].backgroundColor;
+						if(item[0].datasetIndex !== bar) {
+							bg = bg.slice(0, bg.lastIndexOf(","));
+							bg += ", 1)";
+							chart.config._config.data.datasets[bar].backgroundColor = bg;
+							console.log(chart.update());
+							console.log(chart.config._config.data.datasets[bar].backgroundColor);
+						}
+
+					}
+
+				}
+			}
 		}
 	}
 	,computed: {
 		currentMonth() {
 			return this.monthStruct[this.month];
 		}
-		,chartHeight() {
-			let temp = 0;
-			try {
-				temp = this.chartRef.get("height");
-			} catch(err) {
-			}
-			return `height: ${temp + 25}px`;
-		}
 	}
 	,watch: {
-		'options.type'() {
-			this.generateGraph();
+		'config.type'() {
+			this.chartRef.destroy();
+			this.generateGraph(this.config.type);
 		}
 	}
 }

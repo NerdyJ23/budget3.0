@@ -2,7 +2,7 @@
 <div v-if="visible">
     <v-dialog
 		v-model="visible"
-		:max-width="options.mode === defaults.mode[0] ? '45vw' : '75vw'"
+		:max-width="width"
     >
 		<EditReceipt v-if="options.mode === defaults.mode[1] || options.mode === defaults.mode[2]" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
 		<ViewReceipt v-if="options.mode === defaults.mode[0]" :receipt="receipt" @close="hide" key="view"></ViewReceipt>
@@ -134,6 +134,24 @@ export default {
 				this.$refs.banner.setStatusMessage('uhoh!');
 				console.error(err);
 			})
+		}
+	},
+	computed: {
+		width() {
+			if(this.options.mode === this.defaults.mode[1] || this.options.mode === this.defaults.mode[2]) {
+				if(!this.$vuetify.breakpoint.sm) {
+					return '75vw';
+				}
+				return '100vw';
+			}
+			if(this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm) {
+				return '100vw';
+			}
+			if(this.$vuetify.breakpoint.md) {
+				return '75vw';
+			}
+
+			return '50vw';
 		}
 	}
 }

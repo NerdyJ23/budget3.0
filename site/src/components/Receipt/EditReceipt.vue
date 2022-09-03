@@ -7,21 +7,21 @@
 			<v-card-text>
 				<v-form>
 					<v-row>
-						<v-col cols="5">
+						<v-col sm="4" lg="5">
 							<v-text-field
 								v-model="receipt.name"
 								@blur="receipt.name = receipt.name.trim()"
 								label="Location"
 							></v-text-field>
 						</v-col>
-						<v-col cols="5">
+						<v-col sm="4" lg="5">
 							<v-text-field
 								v-model="receipt.location"
 								@blur="receipt.location = receipt.location.trim()"
 								label="Store"
 							></v-text-field>
 						</v-col>
-						<v-col cols="2">
+						<v-col sm="3" lg="2">
 							<v-text-field
 							v-model="receipt.date"
 							prepend-icon="mdi-calendar"
@@ -34,24 +34,27 @@
 					</v-row>
 					<!-- Header Row -->
 					<v-row>
-						<v-col>
+						<v-col lg="5">
 							<span>Item Name</span>
 						</v-col>
-						<v-col>
+						<v-col lg="1">
 							<span>Count</span>
 						</v-col>
-						<v-col>
+						<v-col lg="1">
 							<span>Price</span>
 						</v-col>
-						<v-col>
-							<span>Line Total</span>
+						<v-col v-if="!$vuetify.breakpoint.sm" lg="1">
+							<span></span>
+						</v-col>
+						<v-col lg="4">
+							<span>Category</span>
 						</v-col>
 					</v-row>
 					<v-divider></v-divider>
 					<br />
 					<!-- Item Rows Here -->
-					<v-row v-for="(item, index) in receipt.items" :key="item.id">
-						<v-col cols="5">
+					<v-row v-for="(item, index) in receipt.items" :key="item.id" class="item-row">
+						<v-col lg="5">
 							<v-text-field
 								:label="index === 0 ? 'Item Name' : ''"
 								v-model="item.name"
@@ -59,7 +62,7 @@
 								dense
 							></v-text-field>
 						</v-col>
-						<v-col cols="1">
+						<v-col lg="1">
 							<v-text-field
 								:label="index === 0 ? 'Count' : ''"
 								v-model="item.count"
@@ -68,10 +71,10 @@
 								dense
 							></v-text-field>
 						</v-col>
-						<v-col cols="1">
+						<v-col lg="1">
 							<v-text-field
 								:label="index === 0 ? 'Price (per item)' : ''"
-								v-model="item.cost"
+								v-model="item.cost.toFixed(2)"
 								type="number"
 								step=".01"
 								prefix="$"
@@ -81,7 +84,7 @@
 
 							></v-text-field>
 						</v-col>
-						<v-col cols="1">
+						<v-col v-if="!$vuetify.breakpoint.sm" lg="1">
 							<v-text-field disabled
 									prefix="$"
 									label="Total"
@@ -89,7 +92,7 @@
 									:value="(item.cost * item.count).toFixed(2)"
 							></v-text-field>
 						</v-col>
-						<v-col cols="2">
+						<v-col lg="2">
 							<v-text-field
 							label="Category"
 							v-model="item.category"
@@ -99,8 +102,11 @@
 
 							</v-text-field>
 						</v-col>
-						<v-col cols="1">
-							<v-btn color="error" outlined @click="removeItem(index)">Remove</v-btn>
+						<v-col lg="1">
+							<v-btn v-if="$vuetify.breakpoint.sm" color="error" @click="removeItem(index)" icon>
+								<v-icon>mdi-close-circle</v-icon>
+							</v-btn>
+							<v-btn v-else color="error" outlined @click="removeItem(index)">Remove</v-btn>
 						</v-col>
 					</v-row>
 					<v-row >
@@ -206,6 +212,7 @@ export default {
 				newItem[key] = value;
 			});
 			this.receipt.items.push(newItem);
+			console.log(document.getElementsByClass("item-row"));
 		},
 		removeItem(item) {
 			console.log(item);
@@ -220,7 +227,7 @@ export default {
 			if(lastChar === '5') { // 0.5 is really 0.49999999999~
 				item.cost = parseFloat(item.cost) + .001;
 			}
-			this.receipt.items[index].cost = parseFloat(item.cost).toFixed(2);
+			// this.receipt.items[index].cost = parseFloat(item.cost).toFixed(2);
 		},
 		refresh() {
 			this.receipt.items.push({});

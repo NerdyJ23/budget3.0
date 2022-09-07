@@ -5,7 +5,7 @@
 				<span class="receipt primary--text">{{mode}} Receipt</span>
 			</v-card-title>
 			<v-card-text>
-				<v-form>
+				<v-form v-if="!isMobile()">
 					<v-row>
 						<v-col sm="4" lg="5">
 							<v-text-field
@@ -35,7 +35,7 @@
 					<!-- Header Row -->
 					<v-row>
 						<v-col lg="5">
-							<span>Item Name</span>
+							<span>Name</span>
 						</v-col>
 						<v-col lg="1">
 							<span>Count</span>
@@ -43,7 +43,7 @@
 						<v-col lg="1">
 							<span>Price</span>
 						</v-col>
-						<v-col v-if="!$vuetify.breakpoint.sm" lg="1">
+						<v-col lg="1">
 							<span></span>
 						</v-col>
 						<v-col lg="4">
@@ -103,13 +103,14 @@
 							</v-text-field>
 						</v-col>
 						<v-col lg="1">
-							<v-btn v-if="$vuetify.breakpoint.sm" color="error" @click="removeItem(index)" icon>
+						{{$vuetify.breakpoint.sm}}
+							<v-btn v-if="$vuetify.breakpoint.sm || $vuetify.breakpoint.xs" color="error" @click="removeItem(index)" icon>
 								<v-icon>mdi-close-circle</v-icon>
 							</v-btn>
 							<v-btn v-else color="error" outlined @click="removeItem(index)">Remove</v-btn>
 						</v-col>
 					</v-row>
-					<v-row >
+					<v-row>
 						<v-col cols="5" class="d-flex">
 							<v-divider class="align-self-center"></v-divider>
 						</v-col>
@@ -128,6 +129,7 @@
 						</v-col>
 					</v-row>
 				</v-form>
+				<edit-receipt-mobile v-else :receipt="receipt" :mode="mode" @save="$emit('save')" @close="$emit('close')"></edit-receipt-mobile>
 			</v-card-text>
 			<v-card-actions class="d-flex justify-end">
 				<v-btn @click="$emit('save')" color="primary">Save</v-btn>
@@ -156,12 +158,17 @@
 </template>
 
 <script>
+import EditReceiptMobile from './EditReceiptMobile';
+
 export default {
 	props: {
 		mode: {
 			type: String,
 			required: true
 		}
+	},
+	components: {
+		EditReceiptMobile,
 	},
 	data: function() {
 		return {
@@ -194,7 +201,7 @@ export default {
 		console.log('Edit Receipt mounted');
 	},
 
-	inject: ['getReceipt'],
+	inject: ['getReceipt', 'isMobile'],
 	methods: {
 		init() {
 			this.setDefaults();
@@ -248,14 +255,7 @@ export default {
 		receiptLoaded() {
 			return typeof this.receipt.name !== 'undefined';
 		},
+
 	},
-	// watch: {
-	// 	visible: function (oldVal, newVal) {
-	// 		this.$nextTick(() => {
-	// 			console.log('visible changed');
-	// 			this.init();
-	// 		});
-	// 	}
-	// }
 }
 </script>

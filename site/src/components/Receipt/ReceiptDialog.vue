@@ -4,8 +4,8 @@
 		v-model="visible"
 		:max-width="width"
     >
-		<EditReceipt v-if="options.mode === defaults.mode[1] || options.mode === defaults.mode[2]" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
-		<ViewReceipt v-if="options.mode === defaults.mode[0]" :receipt="receipt" @close="hide" key="view"></ViewReceipt>
+		<EditReceipt v-if="isEdit" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
+		<ViewReceipt v-else :receipt="receipt" @close="hide" key="view"></ViewReceipt>
 
 		<StatusBanner ref="banner"></StatusBanner>
     </v-dialog>
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import EditReceipt from './EditReceipt';
+import EditReceipt from './Edit/EditReceipt';
 import ViewReceipt from './ViewReceipt';
 import StatusBanner from '../Utility/StatusBanner';
 
@@ -52,7 +52,8 @@ export default {
 	},
 	provide: function () {
 		return {
-			getReceipt: this.getReceipt
+			getReceipt: this.getReceipt,
+			isMobile: this.isMobile,
 		}
 	},
 	methods: {
@@ -134,17 +135,21 @@ export default {
 				this.$refs.banner.setStatusMessage('uhoh!');
 				console.error(err);
 			})
-		}
+		},
+		isMobile() {
+			return this.$vuetify.breakpoint.xs;
+		},
 	},
 	computed: {
 		width() {
-			if(this.options.mode === this.defaults.mode[1] || this.options.mode === this.defaults.mode[2]) {
-				if(!this.$vuetify.breakpoint.sm) {
-					return '75vw';
+			//not view
+			if(this.isEdit) {
+				if(this.$vuetify.breakpoint.sm || this.isMobile) {
+					return '100vw';
 				}
-				return '100vw';
+				return '75vw';
 			}
-			if(this.$vuetify.breakpoint.xs || this.$vuetify.breakpoint.sm) {
+			if(this.isMobile || this.$vuetify.breakpoint.sm) {
 				return '100vw';
 			}
 			if(this.$vuetify.breakpoint.md) {
@@ -152,6 +157,10 @@ export default {
 			}
 
 			return '50vw';
+		},
+
+		isEdit() {
+			return this.defaults.mode[0] !== this.options.mode;
 		}
 	}
 }

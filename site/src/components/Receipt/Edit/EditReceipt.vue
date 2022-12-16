@@ -219,7 +219,6 @@ export default {
 				newItem[key] = value;
 			});
 			this.receipt.items.push(newItem);
-			console.log(document.getElementsByClass("item-row"));
 		},
 		removeItem(item) {
 			console.log(item);

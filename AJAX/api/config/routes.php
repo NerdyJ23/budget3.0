@@ -20,6 +20,7 @@ return static function (RouteBuilder $routes) {
 
 			$builder->patch('/{id}', 'Receipts::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Receipts::get')->setPass(['id']);
+			$builder->delete('/{id}', 'Receipts::delete')->setPass(['id']);
 		});
 		$builder->connect('/login', 'Users::login');
 

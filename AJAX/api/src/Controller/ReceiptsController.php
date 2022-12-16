@@ -168,7 +168,20 @@ class ReceiptsController extends ApiController {
 			$this->setSuccess(false);
 		}
 	}
-
+	public function delete($id) {
+		$decrypted = (new EncryptionController)->decrypt($id);
+		if($decrypted != false) {
+			$receipt = $this->Receipts->get($decrypted);
+			$result = $this->Receipts->delete($receipt);
+			if ($result !== false) {
+				$this->setSuccess(true);
+			} else {
+				$this->setSuccess(false);
+			}
+		} else {
+			$this->setSuccess(false);
+		}
+	}
 	public function getYears() {
 		$query = $this->Receipts->find()
 		->select([

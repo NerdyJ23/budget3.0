@@ -206,8 +206,9 @@ export default {
 		async deleteReceipt(receipt) {
 			const response = await cakeApi.deleteReceipt(receipt.id);
 
-			if (response <= 300) {
+			if (response.status <= 300) {
 				console.log("noice");
+				this.loadReceipts();
 			} else {
 				console.error("uh oh");
 			}

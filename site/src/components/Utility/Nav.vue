@@ -24,6 +24,8 @@ import Login from '../Login/LoginDialog';
 import Cookies from 'js-cookie';
 
 export default {
+	name: "NavDrawer",
+
 	mounted() {
 		this.init();
 	},

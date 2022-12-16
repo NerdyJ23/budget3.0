@@ -35,7 +35,7 @@
 				</v-card-text>
 
 				<v-card-actions class="d-flex justify-end">
-					<v-btn color="green lighten-2" @click="login" type="submit">Login</v-btn>
+					<v-btn color="green lighten-2" type="submit">Login</v-btn>
 					<v-btn outlined color="red" @click="options.visible = false">Cancel</v-btn>
 				</v-card-actions>
 			</v-form>
@@ -50,6 +50,7 @@ import StatusBanner from '../Utility/StatusBanner.vue';
 import cakeApi from "../../services/cakeApi";
 
 export default {
+	name: "LoginDialog",
 	mounted() {
 		this.init();
 	},
@@ -90,14 +91,9 @@ export default {
 		async login() {
 			this.isLoading(true);
 			const response = await cakeApi.login(this.username, this.password);
-
+			console.log(response);
+			console.log(`response status is success? ${response.status <= 300}`);
 			if (response.status <= 300) {
-				console.error(`${response.status}: ${response.statusText}`);
-				this.isLoading(false);
-				this.$refs.status.setStatus('Fail');
-				this.$refs.status.setStatusMessage(response.statusText);
-				this.password = '';
-			} else {
 				this.$refs.status.setStatus('Success');
 				this.$refs.status.setStatusMessage('Success! Redirecting...');
 				setTimeout(() => {
@@ -105,29 +101,13 @@ export default {
 					this.isLoading(false);
 					},1000);
 				this.$emit('loggedin');
+			} else {
+				console.error(`${response.status}: ${response.statusText}`);
+				this.isLoading(false);
+				this.$refs.status.setStatus('Fail');
+				this.$refs.status.setStatusMessage(`${response.status}: ${response.statusText}`);
+				this.password = '';
 			}
-
-			// try {
-			// 	fetch(`${this.$store.state.api}/login`, {
-			// 		method: 'POST',
-			// 		credentials: 'include',
-			// 		body: (new URLSearchParams(formData))
-			// 	}).then(response => {
-			// 		if (response.status === 200) {
-
-			// 		} else {
-			// 			this.isLoading(false);
-			// 			throw response;
-			// 		}
-			// 	}).catch((error) => {
-
-			// 	})
-			// } catch(e) {
-			// 	this.isLoading(false);
-			// 	this.$refs.status.setStatus('Fail');
-			// 	this.$refs.status.setStatusMessage('Unknown Error Occured');
-			// 	this.password = '';
-			// }
 		},
 		isLoading(value) {
 			this.$refs.status.init();

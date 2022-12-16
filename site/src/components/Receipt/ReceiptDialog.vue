@@ -17,6 +17,7 @@
 import EditReceipt from './Edit/EditReceipt';
 import ViewReceipt from './ViewReceipt';
 import StatusBanner from '../Utility/StatusBanner';
+import cakeApi from '../../services/cakeApi';
 
 export default {
 	mounted() {
@@ -61,8 +62,6 @@ export default {
 			if (this.options.mode === '') {
 				this.options.mode = this.defaults.mode[0];
 			}
-			console.log(`mode: ${this.options.mode}`);
-			console.log('Receipt Dialog Mounted');
 		},
 		show() {
 			this.visible = true;
@@ -92,49 +91,30 @@ export default {
 			}
 			return false;
 		},
-		save() {
+		async save() {
 			this.receipt = this.$refs.editReceipt.receipt;
 			this.receipt.delete = this.$refs.editReceipt.delete;
-
-			let formData = new FormData();
-			let url = '';
-			let method = this.options.mode === this.defaults.mode[2] ? 'PUT' : 'PATCH';
-
+			let response = null;
 			if (this.options.mode === this.defaults.mode[2]) { //Add
-				formData.append('name', this.receipt.name);
-				formData.append('location', this.receipt.location);
-				formData.append('date', this.receipt.date);
-				formData.append('items', JSON.stringify(this.receipt.items));
-
-				url = `${this.$store.state.api}/receipt/`;
+				response = await cakeApi.createReceipt(this.receipt.name,
+				this.receipt.location,
+				this.receipt.date,
+				this.receipt.items);
 			} else if (this.options.mode === this.defaults.mode[1]) { //Edit
-				formData.append('receipt', JSON.stringify(this.receipt));
-				url = `${this.$store.state.api}/receipt/${this.receipt.id}`;
+				response = await cakeApi.updateReceipt(this.receipt);
 			}
-			console.log(JSON.stringify((this.receipt)));
-			fetch(url, {
-				method: method,
-				body: (new URLSearchParams(formData)),
-				credentials: 'include'
-			}).then(response => {
-				if (response.status === 200) {
-					return response.json();
-				} else {
-					throw new Error();
-				}
-			}).then(data => {
+
+			if (response.status <= 300) {
 				this.$refs.banner.setStatus('Success');
 				this.$refs.banner.setStatusMessage('Saved successfully!');
 				setTimeout(() => {
 					this.hide();
 					this.$emit('updated');
 				}, 500);
-				console.log(data);
-			}).catch(err => {
+			} else {
 				this.$refs.banner.setStatus('Fail');
 				this.$refs.banner.setStatusMessage('uhoh!');
-				console.error(err);
-			})
+			}
 		},
 		isMobile() {
 			return this.$vuetify.breakpoint.xs;

@@ -39,6 +39,7 @@
 import { mapState } from "vuex";
 
 export default {
+	name: "NavList",
 	data() {
 		return {
 			active: false,

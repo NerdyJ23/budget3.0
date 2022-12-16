@@ -5,7 +5,7 @@
 		<v-row>
 			<v-col xl="1" lg="2" class="d-flex align-center">
 				<v-select
-				:items="months"
+				:items="GenericStore.months"
 				v-model="selectedMonth"
 				@:change="loadReceipts()"
 				label="Month"
@@ -67,7 +67,7 @@
 					<td class="justify-end d-flex">
 						<div>
 							<v-btn icon @click.stop="editReceipt(item)"><v-icon color="blue lighten-2">mdi-pencil</v-icon></v-btn>
-							<v-btn icon><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
+							<v-btn icon @click.stop="deleteReceipt(item)"><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
 						</div>
 					</td>
 				</tr>
@@ -84,6 +84,8 @@
 import Receipt from '../components/Receipt';
 import ReceiptDialog from '../components/Receipt/ReceiptDialog';
 import AccessDeniedPage from './ErrorPages/AccessDeniedPage.vue';
+import { mapState } from "vuex";
+import cakeApi from "../services/cakeApi";;
 
 export default {
 	components: {
@@ -91,6 +93,7 @@ export default {
     ReceiptDialog,
     AccessDeniedPage
 },
+	name: "ReceiptListPage",
 	mounted() {
 		this.init();
 		this.loadReceipts();
@@ -98,7 +101,8 @@ export default {
 	data: function() {
 		return {
 			receipts: [],
-			headers: [{
+			headers: [
+			{
 				text: 'Store',
 				value: 'name'
 			},
@@ -124,31 +128,22 @@ export default {
 			}
 			],
 			search: '',
-			apiUrl: this.$store.state.api,
 			loaded: false,
 			years: [],
 			selectedYear: 0,
 			selectedMonth: 0,
-			months: this.$store.state.months
 		}
 	},
 	methods: {
-		loadReceipts() {
+		async loadReceipts() {
 			this.loaded = false;
 			const today = new Date();
-			const selectedMonth = this.months.indexOf(this.selectedMonth) > -1 ? this.months.indexOf(this.selectedMonth) : today.getMonth();
-
-			fetch(`${this.apiUrl}/receipt?month=${selectedMonth+1}&year=${this.selectedYear}`, {
-				method: 'GET',
-				credentials: 'include'
-			}).then(response => {
-				if (response.status === 200) {
-					return response.json();
-				} else {
-					throw new Error();
-				}
-			}).then(data => {
-
+			const selectedMonth = this.GenericStore.months.indexOf(this.selectedMonth) > -1 ? this.GenericStore.months.indexOf(this.selectedMonth) : today.getMonth();
+			const response = await cakeApi.listReceipts(selectedMonth+1, this.selectedYear);
+			if (response.status >= 300) {
+				console.error(response.statusText);
+			} else {
+				const data = response.data;
 				this.receipts = data.result;
 				for(let y in data.years) {
 					this.years.push(data.years[y].date);
@@ -161,16 +156,12 @@ export default {
 				if(this.years.length === 0 || typeof thisYear === 'undefined') {
 					this.years.push(today.getFullYear());
 				}
-
-				this.loaded = true;
-			}).catch(err => {
-				console.error(err);
-				this.loaded = true;
-			})
+			}
+			this.loaded = true;
 		},
 		init() {
 			const today = new Date();
-			this.selectedMonth = this.months[today.getMonth()];
+			this.selectedMonth = this.GenericStore.months[today.getMonth()];
 			this.selectedYear = today.getFullYear();
 		},
 		readableDate(d) {
@@ -194,7 +185,7 @@ export default {
 						break;
 				}
 			}
-			return `${date}${dateExt} ${this.$store.state.months[tempDate.getMonth()]}`;
+			return `${date}${dateExt} ${this.GenericStore.months[tempDate.getMonth()]}`;
 		},
 		editReceipt(receipt) {
 			this.$refs.receiptDialog.setMode('Edit');
@@ -211,6 +202,15 @@ export default {
 			this.$refs.receiptDialog.show();
 
 			this.$refs.receiptDialog.setReceipt(JSON.stringify(receipt));
+		},
+		async deleteReceipt(receipt) {
+			const response = await cakeApi.deleteReceipt(receipt.id);
+
+			if (response <= 300) {
+				console.log("noice");
+			} else {
+				console.error("uh oh");
+			}
 		}
 	},
 	watch: {
@@ -226,9 +226,12 @@ export default {
 		}
 	},
 	computed: {
+		...mapState(["GenericStore"]),
+
 		validSession() {
 			return this.$store.getters.checkValidSession;
-		}
+		},
+
 	}
 }
 </script>

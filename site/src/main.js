@@ -1,7 +1,4 @@
 import Vue from 'vue'
-import Vuetify from 'vuetify/lib';
-import colors from 'vuetify/lib/util/colors';
-
 import VueRouter from 'vue-router';
 
 import App from './App.vue'

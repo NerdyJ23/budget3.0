@@ -1,10 +1,10 @@
 <template>
-	<v-card>
-		<v-card-title>Welcome!</v-card-title>
-		<v-card-text>
+	<div>
+		<h3>Welcome!</h3>
+		<div>
 			Graph here plz and make it look the fancy
-		</v-card-text>
-	</v-card>
+		</div>
+	</div>
 </template>
 
 <script>

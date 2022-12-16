@@ -1,6 +1,7 @@
 <template>
 <div>
-	<v-toolbar elevation="6">
+	<v-toolbar elevation="1">
+		<v-btn plain @click="$emit('toggleDrawer')"><v-icon>mdi-menu</v-icon></v-btn>
 		<v-toolbar-title class="text-h5">
 			<v-btn to="/" plain>Home</v-btn>
 		</v-toolbar-title>
@@ -55,7 +56,7 @@ export default {
 			// console.log(`valid session? : ${this.$store.getters.checkValidSession}`);
 			this.$store.state.validSession = true;
 			this.init();
-		}
+		},
 	}
 }
 </script>

@@ -47,6 +47,8 @@
 
 <script>
 import StatusBanner from '../Utility/StatusBanner.vue';
+import cakeApi from "../../services/cakeApi";
+
 export default {
 	mounted() {
 		this.init();
@@ -85,43 +87,47 @@ export default {
 		hide() {
 			this.options.visible = false;
 		},
-		login() {
+		async login() {
 			this.isLoading(true);
+			const response = await cakeApi.login(this.username, this.password);
 
-			let formData = new FormData();
-			formData.append('username', this.username);
-			formData.append('password', this.password);
-			try {
-				fetch(`${this.$store.state.api}/login`, {
-					method: 'POST',
-					credentials: 'include',
-					body: (new URLSearchParams(formData))
-				}).then(response => {
-					if (response.status === 200) {
-						this.$refs.status.setStatus('Success');
-						this.$refs.status.setStatusMessage('Success! Redirecting...');
-						setTimeout(() => {
-							this.options.visible = false
-							this.isLoading(false);
-							},1000);
-						this.$emit('loggedin');
-					} else {
-						this.isLoading(false);
-						throw response;
-					}
-				}).catch((error) => {
-					console.error(`${error.status}: ${error.statusText}`);
-					this.isLoading(false);
-					this.$refs.status.setStatus('Fail');
-					this.$refs.status.setStatusMessage(error.statusText);
-					this.password = '';
-				})
-			} catch(e) {
+			if (response.status <= 300) {
+				console.error(`${response.status}: ${response.statusText}`);
 				this.isLoading(false);
 				this.$refs.status.setStatus('Fail');
-				this.$refs.status.setStatusMessage('Unknown Error Occured');
+				this.$refs.status.setStatusMessage(response.statusText);
 				this.password = '';
+			} else {
+				this.$refs.status.setStatus('Success');
+				this.$refs.status.setStatusMessage('Success! Redirecting...');
+				setTimeout(() => {
+					this.options.visible = false
+					this.isLoading(false);
+					},1000);
+				this.$emit('loggedin');
 			}
+
+			// try {
+			// 	fetch(`${this.$store.state.api}/login`, {
+			// 		method: 'POST',
+			// 		credentials: 'include',
+			// 		body: (new URLSearchParams(formData))
+			// 	}).then(response => {
+			// 		if (response.status === 200) {
+
+			// 		} else {
+			// 			this.isLoading(false);
+			// 			throw response;
+			// 		}
+			// 	}).catch((error) => {
+
+			// 	})
+			// } catch(e) {
+			// 	this.isLoading(false);
+			// 	this.$refs.status.setStatus('Fail');
+			// 	this.$refs.status.setStatusMessage('Unknown Error Occured');
+			// 	this.password = '';
+			// }
 		},
 		isLoading(value) {
 			this.$refs.status.init();

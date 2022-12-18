@@ -15,7 +15,7 @@
 
 <script>
 import EditReceipt from './Edit/EditReceipt';
-import ViewReceipt from './ViewReceipt';
+import ViewReceipt from './ReceiptView';
 import StatusBanner from '../Utility/StatusBanner';
 import cakeApi from '../../services/cakeApi';
 

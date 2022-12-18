@@ -41,6 +41,7 @@
 
 <script>
 export default {
+	name: "ReceiptView",
 	props: {
 		receipt: {
 			type: Object,

@@ -17,7 +17,8 @@ class Receipt extends Entity {
 		'Date' => true,
 		'Category' => true,
 		'Archive' => true,
-		'EditedUTC' => true
+		'EditedUTC' => true,
+		'ReceiptNumber' => true,
 	];
 
 	protected function _getEncodedId() {

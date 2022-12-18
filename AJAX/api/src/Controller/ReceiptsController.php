@@ -68,6 +68,7 @@ class ReceiptsController extends ApiController {
 		$receipt = $this->fetchTable('Receipts')->newEntity([
 			'Name' => $input->getData('name'),
 			'Location' => $input->getData('location'),
+			'ReceiptNumber' => $input->getData('receiptId'),
 			'User' => $user, // 'User' => $input->getQuery('user')
 			'Date' => $input->getData('date'),
 			'Cost' => 0,
@@ -197,6 +198,7 @@ class ReceiptsController extends ApiController {
 			'id' => $receipt->get('encodedId'),
 			// 'userid' => $receipt->get('userId'),
 			'name' => $receipt->Name,
+			'receiptNumber' => $receipt->ReceiptNumber,
 			'location' => $receipt->Location,
 			'cost' => $receipt->Cost,
 			'date' => $receipt->Date,
@@ -211,6 +213,7 @@ class ReceiptsController extends ApiController {
 			$items[] = [
 				'id' => $item->get('id'),
 				'name' => $item->Name,
+				'receiptNumber' => $item->ReceiptNumber,
 				'count' => $item->Count,
 				'cost' => $item->Cost,
 				'category' => $item->Category

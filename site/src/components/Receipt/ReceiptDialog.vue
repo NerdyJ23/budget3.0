@@ -5,7 +5,7 @@
 		:max-width="width"
     >
 		<EditReceipt v-if="isEdit" ref="editReceipt" :mode="options.mode" @save="save" @close="hide"></EditReceipt>
-		<ViewReceipt v-else :receipt="receipt" @close="hide" key="view"></ViewReceipt>
+		<ViewReceipt v-else :receipt="receipt" @close="hide" @edit="setMode('Edit')" key="view"></ViewReceipt>
 
 		<StatusBanner ref="banner"></StatusBanner>
     </v-dialog>

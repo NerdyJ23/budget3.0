@@ -48,8 +48,8 @@
 		</v-card-text>
 		<v-card class="d-flex justify-end sticky-bar" elevation="0">
 			<v-card-actions>
-				<v-btn color="blue lighten-2">Edit</v-btn>
-				<v-btn outline color="red">Close</v-btn>
+				<v-btn color="blue lighten-2" @click="$emit('edit')">Edit</v-btn>
+				<v-btn outlined color="red" @click="$emit('close')">Close</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-card>
@@ -75,7 +75,7 @@ export default {
 	},
 	computed: {
 		title() {
-			if (this.receipt.receiptNumber !== null) {
+			if (this.receipt.receiptNumber !== null && this.receipt.receiptNumber.trim().length > 0) {
 				return `${this.receipt.receiptNumber} - ${this.receipt.name}`;
 			}
 			return this.receipt.name;

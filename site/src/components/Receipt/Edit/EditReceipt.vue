@@ -138,10 +138,12 @@
 				</v-form>
 				<edit-receipt-mobile v-else :receipt="receipt" :mode="mode" @save="$emit('save')" @close="$emit('close')"></edit-receipt-mobile>
 			</v-card-text>
-			<v-card-actions class="d-flex justify-end">
-				<v-btn @click="$emit('save')" color="primary">Save</v-btn>
-				<v-btn color="error" @click="$emit('close')" outlined>Cancel</v-btn>
-			</v-card-actions>
+			<v-card elevation="0" class="d-flex justify-end sticky-bar">
+				<v-card-actions>
+					<v-btn @click="$emit('save')" color="primary">Save</v-btn>
+					<v-btn color="error" @click="$emit('close')" outlined>Cancel</v-btn>
+				</v-card-actions>
+			</v-card>
 		</v-card>
 
 		<v-dialog v-model="datePick" width="50vw">

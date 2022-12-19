@@ -2,6 +2,10 @@
 	<v-card class="pa-4">
 		<v-card-title class="text-center justify-space-around receipt primary--text">{{title}}</v-card-title>
 		<v-card-text class="receipt-item">
+			<div>
+			
+			</div>
+			<div>
 			<v-row>
 				<v-col cols="12" class="text-center">
 					************************************************************
@@ -26,16 +30,28 @@
 					{{item.category}}
 				</v-col>
 			</v-row>
+			<v-row>
+				<v-divider class="pb-2"/>
+			</v-row>
 			<v-row v-if="receipt.items.length <= 0">
 				<v-col cols="12" class="text-center">
 					<span class="justify-space-around text-h5">Empty...</span>
 				</v-col>
 			</v-row>
-			<v-row v-else>
+			<v-row v-else style="font-size: 1.5em">
 				<v-col cols="8"></v-col>
-				<v-col cols="4" >Total: ${{receipt.cost.toFixed(2)}}</v-col>
+				<v-col cols="2" class="text-end">Total:</v-col>
+				<v-col cols="1">${{receipt.cost.toFixed(2)}}</v-col>
+				<v-col cols="1"></v-col>
 			</v-row>
+		</div>
 		</v-card-text>
+		<v-card class="d-flex justify-end sticky-bar" elevation="0">
+			<v-card-actions>
+				<v-btn color="blue lighten-2">Edit</v-btn>
+				<v-btn outline color="red">Close</v-btn>
+			</v-card-actions>
+		</v-card>
 	</v-card>
 </template>
 

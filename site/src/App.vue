@@ -62,7 +62,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 @font-face {
 	font-family: "Ticket";
 	src: local("Ticket"),
@@ -76,11 +76,21 @@ export default {
 }
 .receipt {
 	font-family: "Ticket";
-	font-size: 2em;
+	font-size: 1.75em;
 }
 
 .receipt-item {
 	font-family: "Ticket";
 	font-size: 1.25em;
+}
+
+.sticky-bar{
+	position: sticky;
+	bottom: 0;
+	opacity: 0.7;
+	
+	&:hover {
+		opacity:1;
+	}
 }
 </style>

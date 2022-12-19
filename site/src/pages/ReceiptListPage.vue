@@ -43,11 +43,11 @@
 				class="d-flex flex-grow-1 flex-column"
 			>
 				<template v-slot:group.header="{item, group, headers}" style="line-height: 1 !important">
-				<td :colspan="headers.length" class="primary" >
-					<v-col cols="12" class="d-flex">
-						<span class="receipt align-self-center">{{group}}</span>
-					</v-col>
-				</td>
+					<td :colspan="headers.length" class="primary" >
+						<v-col cols="12" class="pa-0">
+							<span class="receipt align-self-center">{{group}}</span>
+						</v-col>
+					</td>
 				</template>
 
 				<template v-slot:item="{item}">

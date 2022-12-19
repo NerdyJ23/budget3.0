@@ -32,9 +32,9 @@
 					</v-list-item-content>
 				</v-list-item>
 			</template>
-			<v-divider/>
 		</v-list-item-group>
 		<v-list-item-group class="mt-auto">
+			<v-divider />
 			<v-list-item
 				v-if="GenericStore.validSession"
 				:inactive="true"

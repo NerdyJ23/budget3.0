@@ -32,6 +32,7 @@ export default {
 					name: '',
 					date: null,
 					id: 0,
+					receiptNumber: '',
 					items: []
 				}
 			},
@@ -94,12 +95,14 @@ export default {
 		},
 		async save() {
 			this.receipt = this.$refs.editReceipt.receipt;
+			console.log(this.receipt);
 			this.receipt.delete = this.$refs.editReceipt.delete;
 			let response = null;
 			if (this.options.mode === this.defaults.mode[2]) { //Add
 				response = await cakeApi.createReceipt(this.receipt.name,
 				this.receipt.location,
 				this.receipt.date,
+				this.receipt.receiptNumber,
 				this.receipt.items);
 			} else if (this.options.mode === this.defaults.mode[1]) { //Edit
 				response = await cakeApi.updateReceipt(this.receipt);

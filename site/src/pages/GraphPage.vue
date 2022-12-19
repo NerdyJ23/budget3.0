@@ -8,6 +8,7 @@
 <script>
 import Graph from '../components/Graph/Graph.vue';
 import AccessDeniedPage from './ErrorPages/AccessDeniedPage.vue';
+import cakeApi from "../services/cakeApi";;
 
 export default {
 	components: {
@@ -25,24 +26,14 @@ export default {
 		}
 	},
 	methods: {
-		getSession() {
-			fetch(`${this.apiUrl}/receipt?month=5&year=2021`, {
-				method: 'GET',
-				credentials: 'include'
-			}).then(response => {
-				if (response.status === 200) {
-					return response.json();
-				} else {
-					throw new Error();
-				}
-			}).then(data => {
-				console.log(data);
-				this.dataPoints = data.result;
-				this.loaded = true;
-			}).catch(err => {
-				console.error(err);
-				this.loaded = true;
-			})
+		async getSession() {
+			const response = await cakeApi.listReceipts(8, 2022);
+			if (response.status >= 300) {
+				console.error(response.statusText);
+			} else {
+				this.dataPoints = response.data.result;
+			}
+			this.loaded = true;
 		}
 	},
 	computed: {

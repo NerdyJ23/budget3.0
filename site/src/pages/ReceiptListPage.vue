@@ -53,6 +53,9 @@
 			<template v-slot:item="{item}">
 				<tr @click="viewReceipt(item)" class="bg">
 					<td>
+						<span>{{ item.receiptNumber }}</span>
+					</td>
+					<td>
 						<span>{{item.location}}</span>
 					</td>
 					<td>
@@ -67,7 +70,7 @@
 					<td class="justify-end d-flex">
 						<div>
 							<v-btn icon @click.stop="editReceipt(item)"><v-icon color="blue lighten-2">mdi-pencil</v-icon></v-btn>
-							<v-btn icon @click.stop="deleteReceipt(item)"><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
+							<v-btn icon @click.stop="showDelete(item.id)"><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
 						</div>
 					</td>
 				</tr>
@@ -76,6 +79,10 @@
 	</v-card-text>
 </v-card>
 <ReceiptDialog ref="receiptDialog" @updated="loadReceipts"></ReceiptDialog>
+<SimpleDialog ref="dialog" :confirmText="`Delete`" @confirm="deleteReceipt()" color="red">
+	<template #title><v-icon class="pr-3" color="black">mdi-alert</v-icon>Warning</template>
+	<template #description>Are you sure you want to delete receipt?</template>
+</SimpleDialog>
 </div>
 <AccessDeniedPage v-else></AccessDeniedPage>
 </template>
@@ -83,6 +90,7 @@
 <script>
 import Receipt from '../components/Receipt';
 import ReceiptDialog from '../components/Receipt/ReceiptDialog';
+import SimpleDialog from '@/components/Utility/SimpleDialog';
 import AccessDeniedPage from './ErrorPages/AccessDeniedPage.vue';
 import { mapState } from "vuex";
 import cakeApi from "../services/cakeApi";;
@@ -91,7 +99,8 @@ export default {
 	components: {
     Receipt,
     ReceiptDialog,
-    AccessDeniedPage
+    AccessDeniedPage,
+	SimpleDialog
 },
 	name: "ReceiptListPage",
 	mounted() {
@@ -102,6 +111,10 @@ export default {
 		return {
 			receipts: [],
 			headers: [
+			{
+				text: 'Receipt Number',
+				value: 'receiptNumber'
+			},
 			{
 				text: 'Store',
 				value: 'name'
@@ -132,6 +145,9 @@ export default {
 			years: [],
 			selectedYear: 0,
 			selectedMonth: 0,
+			delete: {
+				id: null
+			},
 		}
 	},
 	methods: {
@@ -203,8 +219,12 @@ export default {
 
 			this.$refs.receiptDialog.setReceipt(JSON.stringify(receipt));
 		},
-		async deleteReceipt(receipt) {
-			const response = await cakeApi.deleteReceipt(receipt.id);
+		showDelete(id) {
+			this.delete.id = id;
+			this.$refs.dialog.showDialog();
+		},
+		async deleteReceipt() {
+			const response = await cakeApi.deleteReceipt(this.delete.id);
 
 			if (response.status <= 300) {
 				console.log("noice");
@@ -212,6 +232,7 @@ export default {
 			} else {
 				console.error("uh oh");
 			}
+			this.delete.id = null;
 		}
 	},
 	watch: {

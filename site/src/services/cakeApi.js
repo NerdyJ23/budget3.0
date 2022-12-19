@@ -27,12 +27,13 @@ export default {
 		});
 		return response;
 	},
-	createReceipt(name, location, date, items) {
+	createReceipt(name, location, date, receiptNumber, items) {
 		let formData = new FormData();
 
 		formData.append('name', name);
 		formData.append('location', location);
 		formData.append('date', date);
+		formData.append('receiptNumber', receiptNumber);
 		formData.append('items', JSON.stringify(items));
 
 		const response = cakeApi().put(`/receipt/`, formData).catch((error) => {

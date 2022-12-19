@@ -21,8 +21,14 @@ const getters = {
 		return true;
 	}
   }
-
+const actions = {
+	logout() {
+		Cookies.remove('token', {path:'/'});
+		window.location = '/';
+	}
+}
   export default {
 	state,
+	actions,
 	getters
 }

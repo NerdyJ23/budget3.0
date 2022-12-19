@@ -48,6 +48,7 @@
 <script>
 import StatusBanner from '../Utility/StatusBanner.vue';
 import cakeApi from "../../services/cakeApi";
+import { mapState } from "vuex";
 
 export default {
 	name: "LoginDialog",
@@ -98,6 +99,7 @@ export default {
 				this.$refs.status.setStatusMessage('Success! Redirecting...');
 				setTimeout(() => {
 					this.options.visible = false
+					this.GenericStore.validSession = true;
 					this.isLoading(false);
 					},1000);
 				this.$emit('loggedin');
@@ -114,6 +116,9 @@ export default {
 			this.options.disabled = value;
 			this.loading = value;
 		}
+	},
+	computed: {
+		...mapState(["GenericStore"])
 	}
 }
 </script>

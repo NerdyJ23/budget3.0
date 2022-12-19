@@ -1,26 +1,22 @@
 <template>
-	<v-card>
+	<v-card elevation="0">
 		<v-card-title>
 			{{currentMonth}}
 		</v-card-title>
 		<v-card-text>
 			<div>
-			Chart Type:
+				Chart Type:
 				<v-switch
 					v-model=config.type
 					false-value="bar"
 					true-value="pie"
 					:label="config.type === 'bar' ? 'Bar' : 'Pie'"
-				>
-
-				</v-switch>
+				 />
 			</div>
-			<v-row>
-			<v-col cols="2"></v-col>
-				<v-col cols="8">
-					<canvas class="justify-space-around" ref="budgetChart"></canvas>
-				</v-col>
-			<v-col cols="2"></v-col>
+			<v-row class="d-flex flex-column align-center">
+				<v-card class="pa-4" style="min-width:50vw;">
+					<canvas ref="budgetChart"></canvas>
+				</v-card>
 			</v-row>
 		</v-card-text>
 	</v-card>

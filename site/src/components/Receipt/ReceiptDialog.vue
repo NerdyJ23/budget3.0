@@ -38,6 +38,7 @@ export default {
 			receipt: {
 				name: '',
 				date: null,
+				receiptNumber: '',
 				id: 0,
 				items: []
 			},

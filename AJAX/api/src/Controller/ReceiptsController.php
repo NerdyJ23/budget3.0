@@ -68,7 +68,7 @@ class ReceiptsController extends ApiController {
 		$receipt = $this->fetchTable('Receipts')->newEntity([
 			'Name' => $input->getData('name'),
 			'Location' => $input->getData('location'),
-			'ReceiptNumber' => $input->getData('receiptId'),
+			'ReceiptNumber' => $input->getData('receiptNumber'),
 			'User' => $user, // 'User' => $input->getQuery('user')
 			'Date' => $input->getData('date'),
 			'Cost' => 0,

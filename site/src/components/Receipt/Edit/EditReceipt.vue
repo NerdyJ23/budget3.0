@@ -7,18 +7,25 @@
 			<v-card-text>
 				<v-form v-if="!isMobile()">
 					<v-row>
-						<v-col sm="4" lg="5">
+						<v-col sm="3" lg="4">
 							<v-text-field
 								v-model="receipt.name"
 								@blur="receipt.name = receipt.name.trim()"
 								label="Location"
 							></v-text-field>
 						</v-col>
-						<v-col sm="4" lg="5">
+						<v-col sm="3" lg="4">
 							<v-text-field
 								v-model="receipt.location"
 								@blur="receipt.location = receipt.location.trim()"
 								label="Store"
+							></v-text-field>
+						</v-col>
+						<v-col sm="2" lg="2">
+							<v-text-field
+								v-model="receipt.receiptNumber"
+								@blur="receipt.receiptNumber = receipt.receiptNumber.trim()"
+								label="Receipt Number"
 							></v-text-field>
 						</v-col>
 						<v-col sm="3" lg="2">

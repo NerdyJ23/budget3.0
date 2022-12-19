@@ -1,88 +1,87 @@
 <template>
 <div v-if="$store.state.validSession">
-<v-card class="px-4">
-	<v-card-title>
-		<v-row>
-			<v-col xl="1" lg="2" class="d-flex align-center">
-				<v-select
-				:items="GenericStore.months"
-				v-model="selectedMonth"
-				@:change="loadReceipts()"
-				label="Month"
-				></v-select>
-			</v-col>
-			<v-col xl="1" lg="1" class="d-flex align-center">
-				<v-select
-				:items="years"
-				v-model="selectedYear"
-				@:change="loadReceipts()"
-				label="Year"
-				></v-select>
-			</v-col>
-			<v-col xl="9" lg="8" class="d-none d-sm-flex">
-				<v-text-field
-				v-model="search"
-				append-icon="mdi-magnify"
-				></v-text-field>
-			</v-col>
-			<v-col cols="1" class="d-flex align-center">
-				<v-btn outlined color="green lighten-1" @click="addReceipt">Add</v-btn>
-			</v-col>
-		</v-row>
-	</v-card-title>
-	<v-card-text>
-	width: {{$vuetify.breakpoint.width}}
-		<v-data-table
-		:headers="headers"
-		:search="search"
-		:items="receipts"
-		:calculateWidths="true"
-		group-by="date"
-		dense
-		mobileBreakpoint="750"
-		:loading="!loaded"
-		>
-			<template v-slot:group.header="{item, group, headers}" style="line-height: 1 !important">
-			<td :colspan="headers.length" class="primary" >
-				<v-col cols="12" class="d-flex">
-					<span class="receipt align-self-center">{{group}}</span>
+	<v-card class="px-4" elevation="0">
+		<v-card-title>
+			<v-row>
+				<v-col xl="1" lg="2" class="d-flex align-center">
+					<v-select
+					:items="GenericStore.months"
+					v-model="selectedMonth"
+					@:change="loadReceipts()"
+					label="Month"
+					></v-select>
 				</v-col>
-			</td>
-			</template>
+				<v-col xl="1" lg="1" class="d-flex align-center">
+					<v-select
+					:items="years"
+					v-model="selectedYear"
+					@:change="loadReceipts()"
+					label="Year"
+					></v-select>
+				</v-col>
+				<v-col xl="9" lg="8" class="d-none d-sm-flex">
+					<v-text-field
+					v-model="search"
+					append-icon="mdi-magnify"
+					></v-text-field>
+				</v-col>
+				<v-col cols="1" class="d-flex align-center">
+					<v-btn outlined color="green lighten-1" @click="addReceipt">Add</v-btn>
+				</v-col>
+			</v-row>
+		</v-card-title>
+		<v-card-text>
+			<v-data-table
+			:headers="headers"
+			:search="search"
+			:items="receipts"
+			:calculateWidths="true"
+			group-by="date"
+			dense
+			mobileBreakpoint="750"
+			:loading="!loaded"
+			>
+				<template v-slot:group.header="{item, group, headers}" style="line-height: 1 !important">
+				<td :colspan="headers.length" class="primary" >
+					<v-col cols="12" class="d-flex">
+						<span class="receipt align-self-center">{{group}}</span>
+					</v-col>
+				</td>
+				</template>
 
-			<template v-slot:item="{item}">
-				<tr @click="viewReceipt(item)" class="bg">
-					<td>
-						<span>{{ item.receiptNumber }}</span>
-					</td>
-					<td>
-						<span>{{item.location}}</span>
-					</td>
-					<td>
-						<span>{{item.name}}</span>
-					</td>
-					<td>
-						${{item.cost.toFixed(2)}}
-					</td>
-					<td>
-						{{item.category}}
-					</td>
-					<td class="justify-end d-flex">
-						<div>
-							<v-btn icon @click.stop="editReceipt(item)"><v-icon color="blue lighten-2">mdi-pencil</v-icon></v-btn>
-							<v-btn icon @click.stop="showDelete(item.id)"><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
-						</div>
-					</td>
-				</tr>
-			</template>
-		</v-data-table>
-	</v-card-text>
-</v-card>
-<ReceiptDialog ref="receiptDialog" @updated="loadReceipts"></ReceiptDialog>
-<SimpleDialog ref="dialog" :confirmText="`Delete`" @confirm="deleteReceipt()" color="red">
-	<template #title><v-icon class="pr-3" color="black">mdi-alert</v-icon>Warning</template>
-	<template #description>Are you sure you want to delete receipt?</template>
-</SimpleDialog>
+				<template v-slot:item="{item}">
+					<tr @click="viewReceipt(item)" class="bg">
+						<td>
+							<span>{{ item.receiptNumber }}</span>
+						</td>
+						<td>
+							<span>{{item.location}}</span>
+						</td>
+						<td>
+							<span>{{item.name}}</span>
+						</td>
+						<td>
+							${{item.cost.toFixed(2)}}
+						</td>
+						<td>
+							{{item.category}}
+						</td>
+						<td class="justify-end d-flex">
+							<div>
+								<v-btn icon @click.stop="editReceipt(item)"><v-icon color="blue lighten-2">mdi-pencil</v-icon></v-btn>
+								<v-btn icon @click.stop="showDelete(item.id)"><v-icon color="red lighten-1">mdi-delete</v-icon></v-btn>
+							</div>
+						</td>
+					</tr>
+				</template>
+			</v-data-table>
+		</v-card-text>
+	</v-card>
+	<ReceiptDialog ref="receiptDialog" @updated="loadReceipts"></ReceiptDialog>
+	<SimpleDialog ref="dialog" :confirmText="`Delete`" @confirm="deleteReceipt()" color="red">
+		<template #title><v-icon class="pr-3" color="black">mdi-alert</v-icon>Warning</template>
+		<template #description>Are you sure you want to delete receipt?</template>
+	</SimpleDialog>
 </div>
 <AccessDeniedPage v-else></AccessDeniedPage>
 </template>

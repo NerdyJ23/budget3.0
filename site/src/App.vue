@@ -1,13 +1,11 @@
 <template>
   <v-app>
     <v-main>
-		<Navbar @toggleDrawer="toggleDrawer" class="pb-2"></Navbar>
+		<Navbar @toggleDrawer="toggleDrawer"></Navbar>
 		<v-divider></v-divider>
-		<v-card class="fill-height rounded-0">
-			<v-row class="fill-height">
-				<NavigationDrawer v-show="GenericStore.drawerExpanded" class="pl-4" :class="[{'col-2': GenericStore.drawerExpanded}]" ref="drawer"></NavigationDrawer>
-				<router-view style="width:auto" class="pl-10" :class="`${GenericStore.drawerExpanded ? 'col-10' : 'col-12'}`"></router-view>
-			</v-row>
+		<v-card class="d-flex flex-grow-1">
+			<NavigationDrawer class="pl-4 col-2" ref="drawer"></NavigationDrawer>
+			<router-view style="width:auto" class="pl-10 col-10"></router-view>
 		</v-card>
     </v-main>
   </v-app>

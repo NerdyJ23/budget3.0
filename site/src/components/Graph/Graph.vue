@@ -1,7 +1,7 @@
 <template>
 	<v-card>
 		<v-card-title>
-			{{monthStruct[month]}}
+			{{currentMonth}}
 		</v-card-title>
 		<v-card-text>
 			<div>
@@ -28,6 +28,7 @@
 
 <script>
 import Chart from 'chart.js/auto';
+import { mapState } from "vuex";
 
 export default {
 	mounted() {
@@ -41,8 +42,7 @@ export default {
 	}
 	,data: function () {
 		return {
-			monthStruct: this.$store.state.months,
-			month: 0,
+			month: 7,
 			year: 0,
 			height: 200,
 			sortedData: null,
@@ -275,8 +275,10 @@ export default {
 		}
 	}
 	,computed: {
+		...mapState(["GenericStore"]),
+
 		currentMonth() {
-			return this.monthStruct[this.month];
+			return this.GenericStore.months[this.month];
 		}
 	}
 	,watch: {

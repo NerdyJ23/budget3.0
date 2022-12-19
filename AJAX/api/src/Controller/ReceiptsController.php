@@ -25,7 +25,7 @@ class ReceiptsController extends ApiController {
 		}
 	}
 	public function index() {
-		$this->set(['message','view help docs for details']);
+		$this->set(['message', 'view help docs for details']);
 	}
 
 	public function list() {
@@ -154,6 +154,7 @@ class ReceiptsController extends ApiController {
 			$receipt->Location = $newReceipt->location;
 			$receipt->setDate($newReceipt->date);
 			$receipt->editedUTC = date('Y-m-s H:i:s');
+			$receipt->receiptNumber = $newReceipt->receiptNumber;
 			$this->updateTotal($receiptTotal, (new EncryptionController)->decrypt($newReceipt->id));
 			$receipt->Category = $this->setCategory((new EncryptionController)->decrypt($newReceipt->id));
 			$result = $table->save($receipt);

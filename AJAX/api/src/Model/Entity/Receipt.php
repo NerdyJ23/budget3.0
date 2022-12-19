@@ -13,12 +13,12 @@ class Receipt extends Entity {
 		'User' => true,
 		'Name' => true,
 		'Location' => true,
+		'ReceiptNumber' => true,
 		'Cost' => true,
 		'Date' => true,
 		'Category' => true,
 		'Archive' => true,
 		'EditedUTC' => true,
-		'ReceiptNumber' => true,
 	];
 
 	protected function _getEncodedId() {

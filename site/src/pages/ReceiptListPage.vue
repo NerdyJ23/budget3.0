@@ -45,7 +45,7 @@
 				<template v-slot:group.header="{item, group, headers}" style="line-height: 1 !important">
 					<td :colspan="headers.length" class="primary" >
 						<v-col cols="12" class="pa-0">
-							<span class="receipt align-self-center">{{group}}</span>
+							<span class="align-self-center">{{readableDate(group)}}</span>
 						</v-col>
 					</td>
 				</template>
@@ -201,7 +201,7 @@ export default {
 						break;
 				}
 			}
-			return `${date}${dateExt} ${this.GenericStore.months[tempDate.getMonth()]}`;
+			return `${this.GenericStore.weekday[tempDate.getDay()]} ${date}${dateExt}`;
 		},
 		editReceipt(receipt) {
 			this.$refs.receiptDialog.setMode('Edit');
@@ -248,12 +248,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["GenericStore"]),
-
-		validSession() {
-			return this.$store.getters.checkValidSession;
-		},
-
+		...mapState(["GenericStore"])
 	}
 }
 </script>

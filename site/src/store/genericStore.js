@@ -6,7 +6,7 @@ const state = {
 	// api: 'http://localhost:5555',
 	site: 'http://localhost',
 	months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-	weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+	weekday: ['Sunday', 'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
 	validSession: false,
 	drawerExpanded: false,
   }

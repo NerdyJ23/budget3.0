@@ -4,15 +4,36 @@
 			{{currentMonth}}
 		</v-card-title>
 		<v-card-text>
-			<div>
-				Chart Type:
-				<v-switch
-					v-model=config.type
-					false-value="bar"
-					true-value="pie"
-					:label="config.type === 'bar' ? 'Bar' : 'Pie'"
-				 />
-			</div>
+			<v-row>
+				<v-col cols="1" class="d-flex align-center justify-end">
+					Chart Type:
+				</v-col>
+				<v-col cols="1">
+					<v-switch
+						v-model=config.type
+						false-value="bar"
+						true-value="pie"
+						:label="config.type === 'bar' ? 'Bar' : 'Pie'"
+					/>
+					<v-btn @click="generateGraph()">Refresh graph</v-btn>
+				</v-col>
+				<v-col cols="2">
+					<v-select
+						:items="GenericStore.months"
+						v-model="month"
+						@change="load()"
+						label="Month"
+					/>
+				</v-col>
+				<v-col cols="1">
+					<v-select
+						:items="year.list"
+						v-model="year.selected"
+						@change="load()"
+						label="Year"
+					/>
+				</v-col>
+			</v-row>
 			<v-row class="d-flex flex-column align-center">
 				<v-card class="pa-4" style="min-width:50vw;">
 					<canvas ref="budgetChart"></canvas>
@@ -25,10 +46,12 @@
 <script>
 import Chart from 'chart.js/auto';
 import { mapState } from "vuex";
+import cakeApi from "../../services/cakeApi";
 
 export default {
 	mounted() {
-		this.generateGraph(this.config.type);
+		this.init();
+		this.load();
 	}
 	,props: {
 		dataPoints: {
@@ -38,8 +61,11 @@ export default {
 	}
 	,data: function () {
 		return {
-			month: 7,
-			year: 0,
+			month: 0,
+			year: {
+				selected: 0,
+				list: []
+			},
 			height: 200,
 			sortedData: null,
 			config: {
@@ -68,15 +94,41 @@ export default {
 		}
 	}
 	,methods: {
+		init() {
+			const today = new Date();
+			this.month = this.GenericStore.months[today.getMonth()];
+			this.year.selected = today.getFullYear();
+		},
+		async load() {
+			const today = new Date();
+			const selectedMonth = this.GenericStore.months.indexOf(this.month) > -1 ? this.GenericStore.months.indexOf(this.month) : today.getMonth();
+			const response = await cakeApi.listReceipts(selectedMonth+1, this.year.selected);
+			if (response.status >= 300) {
+				console.error(response.statusText);
+			} else {
+				const data = response.data;
+				this.receipts = data.result;
+				for(let y in data.years) {
+					this.year.list.push(data.years[y].date);
+				}
+
+				let thisYear = this.year.list.find((year) => {
+					return year === today.getFullYear()
+				});
+
+				if(this.year.list.length === 0 || typeof thisYear === 'undefined') {
+					this.year.list.push(today.getFullYear());
+				}
+				this.generateGraph();
+			}
+		},
 		generateGraph() {
 			this.options.data = [];
 			if(this.sortedData === null) {
 				let tempData = [];
 				for(let receipt in this.dataPoints) {
-					console.log(this.dataPoints[receipt]);
 					for(let i in this.dataPoints[receipt].items) {
 						const item = this.dataPoints[receipt].items[i];
-						console.log(item);
 						if(typeof tempData[item.category] === 'undefined') {
 							tempData[item.category] = {
 								name: item.category,

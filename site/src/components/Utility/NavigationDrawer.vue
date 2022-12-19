@@ -1,7 +1,6 @@
 <template>
 	<v-list
 		class="rounded-0 fill-height d-flex flex-column overflow-x-hidden"
-		style="width: 20vw;"
 	>
 		<v-list-item-group
 			v-model="selectedItem"
@@ -10,7 +9,7 @@
 				<v-list-item-icon>
 					<v-icon>mdi-home</v-icon>
 				</v-list-item-icon>
-				<v-list-item-content>
+				<v-list-item-content v-if="!$vuetify.breakpoint.xs">
 					Home
 				</v-list-item-content>
 			</v-list-item>
@@ -19,7 +18,7 @@
 					<v-list-item-icon>
 						<v-icon>mdi-receipt-text</v-icon>
 					</v-list-item-icon>
-					<v-list-item-content>
+					<v-list-item-content v-if="!$vuetify.breakpoint.xs">
 						Receipts
 					</v-list-item-content>
 				</v-list-item>
@@ -27,7 +26,7 @@
 					<v-list-item-icon>
 						<v-icon>mdi-chart-line-variant</v-icon>
 					</v-list-item-icon>
-					<v-list-item-content>
+					<v-list-item-content v-if="!$vuetify.breakpoint.xs">
 						Graphs
 					</v-list-item-content>
 				</v-list-item>
@@ -44,7 +43,7 @@
 				<v-list-item-icon>
 					<v-icon>mdi-exit-to-app</v-icon>
 				</v-list-item-icon>
-				<v-list-item-content>
+				<v-list-item-content v-if="!$vuetify.breakpoint.xs">
 					Logout
 				</v-list-item-content>
 			</v-list-item>
@@ -57,7 +56,7 @@
 				<v-list-item-icon>
 					<v-icon>mdi-account-circle</v-icon>
 				</v-list-item-icon>
-				<v-list-item-content>
+				<v-list-item-content v-if="!$vuetify.breakpoint.xs">
 					Login
 				</v-list-item-content>
 			</v-list-item>

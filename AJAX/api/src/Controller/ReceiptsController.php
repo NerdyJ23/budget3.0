@@ -154,7 +154,7 @@ class ReceiptsController extends ApiController {
 			$receipt->Location = $newReceipt->location;
 			$receipt->setDate($newReceipt->date);
 			$receipt->editedUTC = date('Y-m-s H:i:s');
-			$receipt->receiptNumber = $newReceipt->receiptNumber;
+			$receipt->ReceiptNumber = $newReceipt->receiptNumber;
 			$this->updateTotal($receiptTotal, (new EncryptionController)->decrypt($newReceipt->id));
 			$receipt->Category = $this->setCategory((new EncryptionController)->decrypt($newReceipt->id));
 			$result = $table->save($receipt);

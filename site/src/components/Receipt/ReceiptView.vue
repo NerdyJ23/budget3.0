@@ -1,6 +1,6 @@
 <template>
 	<v-card class="pa-4">
-		<v-card-title class="text-center justify-space-around receipt primary--text">{{receipt.name}}</v-card-title>
+		<v-card-title class="text-center justify-space-around receipt primary--text">{{title}}</v-card-title>
 		<v-card-text class="receipt-item">
 			<v-row>
 				<v-col cols="12" class="text-center">
@@ -55,6 +55,14 @@ export default {
 	methods: {
 		isFloat(value) {
 			return (value.toString()).indexOf('.') !== -1;
+		}
+	},
+	computed: {
+		title() {
+			if (this.receipt.receiptNumber !== null) {
+				return `${this.receipt.receiptNumber} - ${this.receipt.name}`;
+			}
+			return this.receipt.name;
 		}
 	}
 }

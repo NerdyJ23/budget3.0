@@ -1,5 +1,5 @@
 <template>
-	<div v-if="$store.state.validSession">
+	<div v-if="GenericStore.validSession">
 		<Graph v-if="loaded" :dataPoints=dataPoints></Graph>
 	</div>
 	<AccessDeniedPage v-else></AccessDeniedPage>
@@ -9,6 +9,7 @@
 import Graph from '../components/Graph/Graph.vue';
 import AccessDeniedPage from './ErrorPages/AccessDeniedPage.vue';
 import cakeApi from "../services/cakeApi";;
+import { mapState } from "vuex";
 
 export default {
 	components: {
@@ -22,7 +23,6 @@ export default {
 		return {
 			loaded: false,
 			dataPoints: null,
-			apiUrl: this.$store.state.api
 		}
 	},
 	methods: {
@@ -37,9 +37,7 @@ export default {
 		}
 	},
 	computed: {
-		validSession() {
-			return this.$store.getters.checkValidSession;
-		}
+		...mapState(["GenericStore"]),
 	}
 
 }

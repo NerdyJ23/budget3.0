@@ -1,7 +1,7 @@
 <template>
 	<v-list
-		class="rounded-0 elevation-1 fill-height d-flex flex-column overflow-x-hidden"
-		:style="`width: ${active ? 20 : 0}vw`"
+		class="rounded-0 fill-height d-flex flex-column overflow-x-hidden"
+		style="width: 20vw;"
 	>
 		<v-list-item-group
 			v-model="selectedItem"
@@ -67,6 +67,7 @@
 <script>
 import { mapState } from "vuex";
 
+
 export default {
 	name: "NavList",
 	data() {
@@ -75,7 +76,6 @@ export default {
 			selectedItem: 0,
 		}
 	},
-
 	computed: {
 		...mapState(["GenericStore"])
 	}

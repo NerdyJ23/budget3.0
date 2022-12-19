@@ -1,9 +1,9 @@
 <template>
-<div v-if="$store.state.validSession">
+<div v-if="GenericStore.validSession">
 	<v-card class="px-4" elevation="0">
 		<v-card-title>
 			<v-row>
-				<v-col xl="1" lg="2" class="d-flex align-center">
+				<v-col cols="2" class="d-flex align-center">
 					<v-select
 					:items="GenericStore.months"
 					v-model="selectedMonth"
@@ -11,7 +11,7 @@
 					label="Month"
 					></v-select>
 				</v-col>
-				<v-col xl="1" lg="1" class="d-flex align-center">
+				<v-col cols="1" class="d-flex align-center">
 					<v-select
 					:items="years"
 					v-model="selectedYear"
@@ -19,7 +19,7 @@
 					label="Year"
 					></v-select>
 				</v-col>
-				<v-col xl="9" lg="8" class="d-none d-sm-flex">
+				<v-col cols="8" class="d-none d-sm-flex">
 					<v-text-field
 					v-model="search"
 					append-icon="mdi-magnify"
@@ -32,14 +32,15 @@
 		</v-card-title>
 		<v-card-text>
 			<v-data-table
-			:headers="headers"
-			:search="search"
-			:items="receipts"
-			:calculateWidths="true"
-			group-by="date"
-			dense
-			mobileBreakpoint="750"
-			:loading="!loaded"
+				:headers="headers"
+				:search="search"
+				:items="receipts"
+				:calculateWidths="true"
+				group-by="date"
+				dense
+				mobileBreakpoint="750"
+				:loading="!loaded"
+				class="d-flex flex-grow-1 flex-column"
 			>
 				<template v-slot:group.header="{item, group, headers}" style="line-height: 1 !important">
 				<td :colspan="headers.length" class="primary" >

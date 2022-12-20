@@ -1,6 +1,6 @@
 <template>
 	<v-card elevation="0">
-		<v-card-title>
+		<v-card-title class="accent">
 			{{currentMonth}}
 		</v-card-title>
 		<v-card-text>
@@ -15,7 +15,6 @@
 						true-value="pie"
 						:label="config.type === 'bar' ? 'Bar' : 'Pie'"
 					/>
-					<v-btn @click="generateGraph()">Refresh graph</v-btn>
 				</v-col>
 				<v-col cols="2">
 					<v-select
@@ -36,7 +35,10 @@
 			</v-row>
 			<v-row class="d-flex flex-column align-center">
 				<v-card class="pa-4" style="min-width:50vw;">
-					<canvas ref="budgetChart"></canvas>
+					<v-card-text>
+						<canvas ref="budgetChart" v-show="dataPoints.length > 0"></canvas>
+						<v-card-title v-show="dataPoints.length == 0">No Data Found</v-card-title>
+					</v-card-text>
 				</v-card>
 			</v-row>
 		</v-card-text>
@@ -53,12 +55,6 @@ export default {
 		this.init();
 		this.load();
 	}
-	,props: {
-		dataPoints: {
-			type: Array,
-			required:false
-		}
-	}
 	,data: function () {
 		return {
 			month: 0,
@@ -67,7 +63,7 @@ export default {
 				list: []
 			},
 			height: 200,
-			sortedData: null,
+			// sortedData: null,
 			config: {
 				type: "bar",
 				data: {
@@ -90,6 +86,7 @@ export default {
 					}
 				}
 			},
+			dataPoints: [],
 			chartRef: null
 		}
 	}
@@ -107,7 +104,6 @@ export default {
 				console.error(response.statusText);
 			} else {
 				const data = response.data;
-				this.receipts = data.result;
 				for(let y in data.years) {
 					this.year.list.push(data.years[y].date);
 				}
@@ -119,90 +115,22 @@ export default {
 				if(this.year.list.length === 0 || typeof thisYear === 'undefined') {
 					this.year.list.push(today.getFullYear());
 				}
-				this.generateGraph();
+				this.dataPoints = data.result;
+				this.generateGraph(this.config.type);
 			}
-		},
-		generateGraph() {
-			this.options.data = [];
-			if(this.sortedData === null) {
-				let tempData = [];
-				for(let receipt in this.dataPoints) {
-					for(let i in this.dataPoints[receipt].items) {
-						const item = this.dataPoints[receipt].items[i];
-						if(typeof tempData[item.category] === 'undefined') {
-							tempData[item.category] = {
-								name: item.category,
-								cost: 0
-							};
-						}
-						tempData[item.category].cost += item.cost * item.count;
-					}
-				}
-				this.sortedData = [];
-				for (let item in tempData) {
-					this.sortedData.push(tempData[item]);
-				}
-				this.sortedData.sort(function (a,b) {return a.cost - b.cost});
-			}
-			let pos = 0;
-
-			if(this.options.type === 'pie') {
-				this.options.data.push({
-					type: "pie",
-					showInLegend: true,
-					yValueFormatString: "$#####",
-					dataPoints: []
-				});
-				for(let i in this.sortedData) {
-					if(this.sortedData[i].cost <= 0) {
-						console.log(this.sortedData[i]);
-						continue;
-					}
-					let item = {
-						legendText: this.sortedData[i].name,
-						name: this.sortedData[i].name,
-						label: this.sortedData[i].name,
-						x: pos,
-						y: this.sortedData[i].cost,
-					}
-					this.options.data[0].dataPoints.push(item);
-					pos++;
-				}
-			} else if (this.options.type === 'column') {
-				this.options.data = [];
-				for(let i in this.sortedData) {
-					if(this.sortedData[i].cost <= 0) {
-						console.log(this.sortedData[i]);
-						continue;
-					}
-					let item = {
-						type: 'column',
-						legendText: this.sortedData[i].name,
-						name: this.sortedData[i].name,
-						yValueFormatString: "$#####",
-						showInLegend: true,
-						dataPoints:[{
-							label: this.sortedData[i].name,
-							x: pos,
-							y: this.sortedData[i].cost
-						}]
-					}
-					this.options.data.push(item);
-					pos++;
-				}
-			}
-			var chart = new CanvasJS.Chart('budgetChart', this.options);
-			chart.render();
-
-			this.chartRef = chart;
 		},
 		generateGraph(type) {
-			if(type === "bar") {
-				this.generateBarGraph();
-			} else if (type === "pie") {
-				this.generatePieGraph();
+			if (this.chartRef != null) {
+				this.chartRef.destroy();
 			}
-
+			this.$nextTick(() => {
+				this.config.type = type;
+				this.generateBarGraph();
+				// if(type === "bar") {
+				// } else if (type === "pie") {
+				// 	this.generatePieGraph();
+				// }
+			});
 		},
 		generateBarGraph() {
 			this.config.data.datasets = [];
@@ -225,6 +153,12 @@ export default {
 					}
 				}
 			}
+
+			if (this.config.type == "pie") {
+				this.config.data.datasets.push({data: []});
+				this.config.data.datasets[0].backgroundColor = [];
+			}
+
 			for(const item in labels) {
 				let temp = {
 					label: labels[item],
@@ -234,19 +168,24 @@ export default {
 					onHover: this.hoverBar,
 					backgroundColor: `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`
 				};
-				temp.data[labels[item]] = values[item];
-				this.config.data.datasets.push(temp);
+
+				if (this.config.type == "bar") {
+					temp.data[labels[item]] = values[item];
+					this.config.data.datasets.push(temp);
+				} else if (this.config.type == "pie") {
+					this.config.data.datasets[0].data.push(values[item]);
+					this.config.data.labels.push(labels[item]);
+					this.config.data.datasets[0].backgroundColor.push(temp.backgroundColor);
+				}
 			}
 
 			this.config.options.plugins.title.text = this.currentMonth;
 			this.config.options.onHover = this.hoverBar;
 			// this.config.options.mouseOut = this.leaveBar;
-			console.log(this.config);
 
 			this.config.options.plugins.legend.onHover = this.handleHover;
 			this.config.options.plugins.legend.onLeave = this.handleLeave;
 			const chart = new Chart(ctx, this.config);
-
 			this.chartRef = chart;
 		},
 
@@ -271,7 +210,9 @@ export default {
 		},
 
 		hoverBar(evt, item, chart) {
-
+			if (this.config.type != "bar") {
+				return;
+			}
 			let alpha = "";
 			let index = -1;
 			if(item.length > 0) {
@@ -303,7 +244,7 @@ export default {
 
 		},
 		leaveBar(evt, item, chart) {
-						if(item.length > 0) {
+			if(item.length > 0) {
 				if(item[0].element.constructor.name === "BarElement") {
 					console.log(chart.config._config);
 					for(const bar in chart.config._config.data.datasets) {
@@ -326,12 +267,14 @@ export default {
 		...mapState(["GenericStore"]),
 
 		currentMonth() {
-			return this.GenericStore.months[this.month];
+			return this.month;
 		}
 	}
 	,watch: {
 		'config.type'() {
-			this.chartRef.destroy();
+			if (this.chartRef != null) {
+				this.chartRef.destroy();
+			}
 			this.generateGraph(this.config.type);
 		}
 	}

@@ -1,6 +1,6 @@
 <template>
 	<div v-if="GenericStore.validSession">
-		<Graph v-if="loaded" :dataPoints=dataPoints></Graph>
+		<Graph v-if="loaded"></Graph>
 	</div>
 	<AccessDeniedPage v-else></AccessDeniedPage>
 </template>
@@ -17,7 +17,8 @@ export default {
     AccessDeniedPage
 },
 	mounted() {
-		this.getSession();
+		// this.getSession();
+		this.loaded = true;
 	},
 	data: function() {
 		return {

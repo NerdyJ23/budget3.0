@@ -1,45 +1,49 @@
 <template>
-	<v-card elevation="0">
+	<v-card>
 		<v-card-title class="accent">
-			{{currentMonth}}
+			Monthly Overview
 		</v-card-title>
 		<v-card-text>
-			<v-row>
-				<v-col cols="1" class="d-flex align-center justify-end">
-					Chart Type:
+			<v-row class="pt-4">
+				<v-col cols="8">
+					<canvas ref="budgetChart" v-show="dataPoints.length > 0"></canvas>
+					<v-card-title v-show="dataPoints.length == 0">No Data Found</v-card-title>
 				</v-col>
-				<v-col cols="1">
-					<v-switch
-						v-model=config.type
-						false-value="bar"
-						true-value="pie"
-						:label="config.type === 'bar' ? 'Bar' : 'Pie'"
-					/>
+				<v-col cols="4">
+					<v-row>
+						<v-col cols="7">
+							<v-select
+								:items="GenericStore.months"
+								v-model="month"
+								@change="load()"
+								label="Month"
+							/>
+						</v-col>
+						<v-col cols="5">
+							<v-select
+								:items="year.list"
+								v-model="year.selected"
+								@change="load()"
+								label="Year"
+							/>
+						</v-col>
+					</v-row>
+					<v-row>
+						<v-col cols="3" class="d-flex align-center justify-end">
+							Chart Type:
+						</v-col>
+						<v-col cols="9">
+							<v-btn-toggle v-model="chartType.selected" mandatory>
+								<v-btn>
+									<v-icon>mdi-chart-bar</v-icon>
+								</v-btn>
+								<v-btn>
+									<v-icon>mdi-chart-pie</v-icon>
+								</v-btn>
+							</v-btn-toggle>
+						</v-col>
+					</v-row>
 				</v-col>
-				<v-col cols="2">
-					<v-select
-						:items="GenericStore.months"
-						v-model="month"
-						@change="load()"
-						label="Month"
-					/>
-				</v-col>
-				<v-col cols="1">
-					<v-select
-						:items="year.list"
-						v-model="year.selected"
-						@change="load()"
-						label="Year"
-					/>
-				</v-col>
-			</v-row>
-			<v-row class="d-flex flex-column align-center">
-				<v-card class="pa-4" style="min-width:50vw;">
-					<v-card-text>
-						<canvas ref="budgetChart" v-show="dataPoints.length > 0"></canvas>
-						<v-card-title v-show="dataPoints.length == 0">No Data Found</v-card-title>
-					</v-card-text>
-				</v-card>
 			</v-row>
 		</v-card-text>
 	</v-card>
@@ -61,6 +65,10 @@ export default {
 			year: {
 				selected: 0,
 				list: []
+			},
+			chartType: {
+				selected: 0,
+				list: ['bar', 'pie']
 			},
 			height: 200,
 			// sortedData: null,
@@ -265,16 +273,16 @@ export default {
 	}
 	,computed: {
 		...mapState(["GenericStore"]),
-
 		currentMonth() {
 			return this.month;
 		}
 	}
 	,watch: {
-		'config.type'() {
+		"chartType.selected"(){
 			if (this.chartRef != null) {
 				this.chartRef.destroy();
 			}
+			this.config.type = this.chartType.list[this.chartType.selected];
 			this.generateGraph(this.config.type);
 		}
 	}

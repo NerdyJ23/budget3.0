@@ -192,7 +192,7 @@ export default {
 						dateExt = 'st';
 						break;
 					case 2:
-						dateExt = 'nd';
+					dateExt = 'nd';
 						break;
 					case 3:
 						dateExt = 'rd';

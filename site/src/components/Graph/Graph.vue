@@ -34,10 +34,10 @@
 						</v-col>
 						<v-col cols="9">
 							<v-btn-toggle v-model="chartType.selected" mandatory>
-								<v-btn>
+								<v-btn :disabled="dataPoints.length == 0">
 									<v-icon>mdi-chart-bar</v-icon>
 								</v-btn>
-								<v-btn>
+								<v-btn :disabled="dataPoints.length == 0">
 									<v-icon>mdi-chart-pie</v-icon>
 								</v-btn>
 							</v-btn-toggle>

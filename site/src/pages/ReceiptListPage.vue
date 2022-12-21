@@ -3,6 +3,12 @@
 	<v-card class="px-4" elevation="0">
 		<v-card-title>
 			<v-row>
+				<v-col cols="8" class="d-none d-sm-flex">
+					<v-text-field
+					v-model="search"
+					append-icon="mdi-magnify"
+					></v-text-field>
+				</v-col>
 				<v-col cols="2" class="d-flex align-center">
 					<v-select
 					:items="GenericStore.months"
@@ -18,12 +24,6 @@
 					@:change="loadReceipts()"
 					label="Year"
 					></v-select>
-				</v-col>
-				<v-col cols="8" class="d-none d-sm-flex">
-					<v-text-field
-					v-model="search"
-					append-icon="mdi-magnify"
-					></v-text-field>
 				</v-col>
 				<v-col cols="1" class="d-flex align-center">
 					<v-btn outlined color="green lighten-1" @click="addReceipt">Add</v-btn>

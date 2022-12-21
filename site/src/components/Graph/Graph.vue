@@ -6,8 +6,8 @@
 		<v-card-text>
 			<v-row class="pt-4">
 				<v-col cols="8">
-					<canvas ref="budgetChart" v-show="dataPoints.length > 0"></canvas>
-					<v-card-title v-show="dataPoints.length == 0">No Data Found</v-card-title>
+					<canvas ref="budgetChart" v-show="hasData" style="max-height: 50vh"></canvas>
+					<v-card-title v-show="!hasData">No Data Found</v-card-title>
 				</v-col>
 				<v-col cols="4">
 					<v-row>
@@ -34,15 +34,20 @@
 						</v-col>
 						<v-col cols="9">
 							<v-btn-toggle v-model="chartType.selected" mandatory>
-								<v-btn :disabled="dataPoints.length == 0">
+								<v-btn :disabled="!hasData">
 									<v-icon>mdi-chart-bar</v-icon>
 								</v-btn>
-								<v-btn :disabled="dataPoints.length == 0">
+								<v-btn :disabled="!hasData">
 									<v-icon>mdi-chart-pie</v-icon>
 								</v-btn>
 							</v-btn-toggle>
 						</v-col>
 					</v-row>
+				</v-col>
+			</v-row>
+			<v-row v-if="hasData">
+				<v-col cols="auto">
+					<GraphLegend :items="legendItems"/>
 				</v-col>
 			</v-row>
 		</v-card-text>
@@ -51,10 +56,15 @@
 
 <script>
 import Chart from 'chart.js/auto';
+import GraphLegend from "./GraphLegend";
 import { mapState } from "vuex";
 import cakeApi from "../../services/cakeApi";
 
 export default {
+	name: "Graph",
+	components: {
+		GraphLegend
+	},
 	mounted() {
 		this.init();
 		this.load();
@@ -68,7 +78,7 @@ export default {
 			},
 			chartType: {
 				selected: 0,
-				list: ['bar', 'pie']
+				list: ['bar', 'doughnut']
 			},
 			height: 200,
 			// sortedData: null,
@@ -82,17 +92,24 @@ export default {
 				options: {
 					responsive: true,
 					events: ["mousemove", "mouseout"],
+					hover: {
+						mode: "point"
+					},
 					plugins: {
 						title: {
-							display: true,
-							text:'undefined'
-
+							display: false,
 						},
 						legend: {
-							display: true,
+							display: false,
 						}
-					}
-				}
+					},
+					animation: {
+						animateRotate: true,
+						colors: true,
+					},
+					cutout: "70%",
+					hoverOffset: 25
+				},
 			},
 			dataPoints: [],
 			chartRef: null
@@ -162,7 +179,7 @@ export default {
 				}
 			}
 
-			if (this.config.type == "pie") {
+			if (this.isPie) { //pie
 				this.config.data.datasets.push({data: []});
 				this.config.data.datasets[0].backgroundColor = [];
 			}
@@ -174,13 +191,17 @@ export default {
 					skipNull: true,
 					grouped: false,
 					onHover: this.hoverBar,
-					backgroundColor: `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`
+
+					red: Math.floor(Math.random() * 255),
+					green: Math.floor(Math.random() * 255),
+					blue: Math.floor(Math.random() * 255),
 				};
 
-				if (this.config.type == "bar") {
+				temp.backgroundColor = this.generateBarColor(temp);
+				if (this.isBar) {
 					temp.data[labels[item]] = values[item];
 					this.config.data.datasets.push(temp);
-				} else if (this.config.type == "pie") {
+				} else if (this.isPie) {
 					this.config.data.datasets[0].data.push(values[item]);
 					this.config.data.labels.push(labels[item]);
 					this.config.data.datasets[0].backgroundColor.push(temp.backgroundColor);
@@ -197,84 +218,81 @@ export default {
 			this.chartRef = chart;
 		},
 
-		// Append '4d' to the colors (alpha channel), except for the hovered index
-		handleHover(evt, item, legend) {
-			for(const dataset of legend.chart.data.datasets) {
-				if(dataset.label !== item.text) {
-					dataset.backgroundColor = dataset.backgroundColor.slice(0, dataset.backgroundColor.lastIndexOf(','));
-					dataset.backgroundColor += ', 0.2)'
-				}
-			}
-			legend.chart.update();
+		generateBarColor(barObj, hovered) {
+			const alpha = hovered ? 0.2 : 1;
+			return `rgba(${barObj.red}, ${barObj.green}, ${barObj.blue}, ${alpha})`;
 		},
 
-		// Removes the alpha channel from background colors
-		handleLeave(evt, item, legend) {
+		handleHover(evt, item, legend) {
+			console.log('handle hover');
+			console.log(item);
+			console.log(legend);
 			for(const dataset of legend.chart.data.datasets) {
-				dataset.backgroundColor = dataset.backgroundColor.slice(0, dataset.backgroundColor.lastIndexOf(','));
-				dataset.backgroundColor += ', 1)'
+				if(dataset.label !== item.text) {
+					dataset.backgroundColor = this.generateBarColor(dataset, true);
+				}
+			}
+		},
+		handleLeave(evt, item, legend) {
+			legend.chart.update();
+			for(const dataset of legend.chart.data.datasets) {
+				dataset.backgroundColor = this.generateBarColor(dataset);
 			}
 			legend.chart.update();
+
 		},
 
 		hoverBar(evt, item, chart) {
-			if (this.config.type != "bar") {
+			if (!this.isBar) {
 				return;
 			}
-			let alpha = "";
+			console.log('bar hover');
+			console.log(item);
 			let index = -1;
 			if(item.length > 0) {
-				alpha = ", 0.2)";
 				index = item[0].datasetIndex;
+				for(const bar in chart.config._config.data.datasets) {
+					const changeBg = index == -1 || item[0].datasetIndex != bar;
+					chart.config._config.data.datasets[bar].backgroundColor = this.generateBarColor(chart.config._config.data.datasets[bar], changeBg);
+				}
+				chart.update();
 			} else {
-				alpha = ", 1)";
-				this.leaveBar(evt, item, chart);
-			}
-
-			for(const bar in chart.config._config.data.datasets) {
-				let bg = chart.config._config.data.datasets[bar].backgroundColor;
-				bg = bg.slice(0, bg.lastIndexOf(","));
-
-				let changeBg = false;
-				if(index == -1) {
-					changeBg = true;
-					bg += alpha;
-				} else if(item[0].datasetIndex != bar) {
-					changeBg = true;
+				for(const bar of chart.config._config.data.datasets) {
+					bar.backgroundColor = this.generateBarColor(bar, false);
 				}
-
-				if(changeBg) {
-					bg += alpha;
-					chart.config._config.data.datasets[bar].backgroundColor = bg;
-				}
+				chart.update();
 			}
-			chart.update();
-
 		},
-		leaveBar(evt, item, chart) {
-			if(item.length > 0) {
-				if(item[0].element.constructor.name === "BarElement") {
-					console.log(chart.config._config);
-					for(const bar in chart.config._config.data.datasets) {
-					let bg = chart.config._config.data.datasets[bar].backgroundColor;
-						if(item[0].datasetIndex !== bar) {
-							bg = bg.slice(0, bg.lastIndexOf(","));
-							bg += ", 1)";
-							chart.config._config.data.datasets[bar].backgroundColor = bg;
-							console.log(chart.update());
-							console.log(chart.config._config.data.datasets[bar].backgroundColor);
-						}
-
-					}
-
-				}
-			}
-		}
 	}
 	,computed: {
 		...mapState(["GenericStore"]),
 		currentMonth() {
 			return this.month;
+		},
+		legendItems() {
+			if (this.hasData && this.config.data.datasets[0] != null) {
+				let arr = [];
+				if (this.isBar) {
+					for (let item of this.config.data.datasets) {
+						arr.push({
+							"color": item.backgroundColor,
+							label: item.label
+						});
+					}
+					return arr;
+				} else if (this.isPie) {
+				}
+			}
+			return [];
+		},
+		isBar() {
+			return this.config.type == this.chartType.list[0];
+		},
+		isPie() {
+			return this.config.type == this.chartType.list[1];
+		},
+		hasData() {
+			return this.dataPoints.length > 0;
 		}
 	}
 	,watch: {

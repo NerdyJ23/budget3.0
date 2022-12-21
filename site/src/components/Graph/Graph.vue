@@ -47,7 +47,7 @@
 			</v-row>
 			<v-row v-if="hasData">
 				<v-col cols="auto">
-					<GraphLegend :items="legendItems"/>
+					<GraphLegend :items="legendItems" @hovered="(n) => legendItemHovered(n)" @leave="(n) => legendItemLeave(n)"/>
 				</v-col>
 			</v-row>
 		</v-card-text>
@@ -222,24 +222,30 @@ export default {
 			const alpha = hovered ? 0.2 : 1;
 			return `rgba(${barObj.red}, ${barObj.green}, ${barObj.blue}, ${alpha})`;
 		},
-
+		legendItemHovered(item) {
+			this.handleHover(null, {text: item},  null);
+		},
+		legendItemLeave(item) {
+			this.handleLeave();
+		},
 		handleHover(evt, item, legend) {
 			console.log('handle hover');
 			console.log(item);
 			console.log(legend);
-			for(const dataset of legend.chart.data.datasets) {
+			for(const dataset of this.config.data.datasets) {
 				if(dataset.label !== item.text) {
 					dataset.backgroundColor = this.generateBarColor(dataset, true);
 				}
+				console.log(`${dataset.label} ?= ${item.text}`)
 			}
+			this.chartRef.update();
 		},
-		handleLeave(evt, item, legend) {
-			legend.chart.update();
-			for(const dataset of legend.chart.data.datasets) {
+		handleLeave() {
+			this.chartRef.update();
+			for(const dataset of this.config.data.datasets) {
 				dataset.backgroundColor = this.generateBarColor(dataset);
 			}
-			legend.chart.update();
-
+			this.chartRef.update();
 		},
 
 		hoverBar(evt, item, chart) {

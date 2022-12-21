@@ -3,8 +3,11 @@
 		<v-card-title>Legend</v-card-title>
 		<v-card-text>
 			<v-row>
-				<v-col cols="4" v-for="item of items" class="py-4">
-					<GraphLegendItem :label="item.label" :color="item.color"
+				<v-col cols="3" v-for="item of items" class="py-4">
+					<GraphLegendItem
+						:label="item.label"
+						:color="item.color"
+						:price="item.price"
 						@hovered="(n) => $emit('hovered', n)"
 						@leave="(n) => $emit('leave', n)"
 					/>

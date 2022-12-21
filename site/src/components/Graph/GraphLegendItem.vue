@@ -1,8 +1,8 @@
 <template>
 	<v-row class="d-flex d-flex-column align-center">
 		<v-col
-			@mouseover="$emit('hovered', label)"
-			@mouseleave="$emit('leave', label)"
+			@mouseover="$emit('hovered', label); hovered = true"
+			@mouseleave="$emit('leave', label); hovered = false"
 			@click="$emit('toggleVisibility', label)"
 			class="pa-2 legend-label-color"
 			cols="4"
@@ -13,6 +13,7 @@
 			:class="[{'text-decoration-line-through': !visible}]"
 		>
 			{{ label }}
+			<span :style="`${hovered ? '' : 'visibility: hidden'}`">${{ price.toFixed(2) }}</span>
 		</v-col>
 	</v-row>
 </template>
@@ -28,10 +29,19 @@ export default {
 			type: String,
 			required: true
 		},
+		price: {
+			type: Number,
+			required: true
+		},
 		visible: {
 			type: Boolean,
 			required: false,
 			default: true
+		}
+	},
+	data() {
+		return {
+			hovered: false
 		}
 	},
 	methods: {

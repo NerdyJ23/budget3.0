@@ -191,7 +191,7 @@ export default {
 					skipNull: true,
 					grouped: false,
 					onHover: this.hoverBar,
-
+					show: true,
 					red: Math.floor(Math.random() * 255),
 					green: Math.floor(Math.random() * 255),
 					blue: Math.floor(Math.random() * 255),
@@ -227,6 +227,9 @@ export default {
 		},
 		legendItemLeave(item) {
 			this.handleLeave();
+		},
+		renderBars() {
+			// this.chart.
 		},
 		handleHover(evt, item, legend) {
 			console.log('handle hover');
@@ -282,7 +285,8 @@ export default {
 					for (let item of this.config.data.datasets) {
 						arr.push({
 							"color": item.backgroundColor,
-							label: item.label
+							label: item.label,
+							price: Object.values(item.data)[0]
 						});
 					}
 					return arr;

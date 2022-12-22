@@ -3,7 +3,7 @@
 		<v-card-title>Legend</v-card-title>
 		<v-card-text>
 			<v-row>
-				<v-col cols="3" v-for="item of items" class="py-4">
+				<v-col cols="3" v-for="item of items">
 					<GraphLegendItem
 						:label="item.label"
 						:color="item.color"

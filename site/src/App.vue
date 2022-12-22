@@ -26,11 +26,10 @@ export default {
 		window.addEventListener('resize', () => {
 			self.calcHeight();
 		})
-		// this.$vuetify.theme.dark = true;
 	},
 	data() {
 		return {
-			contentHeight: 0
+			contentHeight: 0,
 		}
 	},
   	name: 'App',

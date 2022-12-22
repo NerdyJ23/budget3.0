@@ -4,7 +4,7 @@
 			@mouseover="$emit('hovered', label); hovered = true"
 			@mouseleave="$emit('leave', label); hovered = false"
 			@click="$emit('toggleVisibility', label)"
-			class="pa-2 legend-label-color"
+			class="legend-label-color"
 			cols="4"
 			:style="`background-color: ${color};`">
 		</v-col>

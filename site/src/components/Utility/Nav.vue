@@ -15,7 +15,6 @@
 			<template v-else>
 				<v-btn @click="$emit('login')" plain>Login</v-btn>
 			</template>
-			<ThemeToggle/>
 		</div>
 
 	</v-toolbar>

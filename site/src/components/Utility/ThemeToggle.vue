@@ -1,15 +1,9 @@
 <template>
-	<v-row>
-		<v-col cols="2">
-			<v-icon :color="`${darkTheme ? '' : 'primary'}`">mdi-white-balance-sunny</v-icon>
-		</v-col>
-		<v-col cols="3">
-			<v-switch v-model="darkTheme"></v-switch>
-		</v-col>
-		<v-col cols="1">
-			<v-icon :color="`${darkTheme ? 'primary' : ''}`">mdi-moon-waning-crescent</v-icon>
-		</v-col>
-	</v-row>
+	<div class="d-flex d-flex--row">
+		<v-icon class="pr-2" :color="`${darkTheme ? '' : 'primary'}`">mdi-white-balance-sunny</v-icon>
+		<v-switch v-model="darkTheme"></v-switch>
+		<v-icon class="pl-1" :color="`${darkTheme ? 'primary' : ''}`">mdi-moon-waning-crescent</v-icon>
+	</div>
 </template>
 <script>
 export default {

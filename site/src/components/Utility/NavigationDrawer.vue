@@ -33,6 +33,9 @@
 			</template>
 		</v-list-item-group>
 		<v-list-item-group class="mt-auto">
+			<div class="d-flex d-flex--row align-center ml-4">
+				<span class="pr-3">Theme: </span><ThemeToggle />
+			</div>
 			<v-divider />
 			<v-list-item
 				v-if="GenericStore.validSession"
@@ -65,10 +68,13 @@
 </template>
 <script>
 import { mapState } from "vuex";
-
+import ThemeToggle from "./ThemeToggle";
 
 export default {
 	name: "NavList",
+	components: {
+		ThemeToggle
+	},
 	data() {
 		return {
 			active: false,
